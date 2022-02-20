@@ -1,35 +1,20 @@
-import React, { useState } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Home from "./Routes/Home";
 
 function App() {
-  const [name, setName] = useState<string>("");
-
-  function onChange(event: React.FormEvent<HTMLInputElement>) {
-    const {
-      currentTarget: { value },
-    } = event;
-
-    setName(value);
-  }
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    await fetch("http://localhost:4000/name", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name }),
-    })
-      .then((response) => response.json())
-      .then((json) => alert(json));
-  }
-
   return (
-    <form onSubmit={onSubmit}>
-      <input type="text" value={name} onChange={onChange} />
-      <input type="submit" value="submit" />
-    </form>
+    <Router>
+      <Header />
+      <Switch>
+        <Route path={["/", "/login"]}>
+          <Home />
+        </Route>
+        <Route path="/users">{/* <Users /> */}</Route>
+        <Route path="/categories">{/* <Categories /> */}</Route>
+        <Route path="/api">{/* <Api /> */}</Route>
+      </Switch>
+    </Router>
   );
 }
 
