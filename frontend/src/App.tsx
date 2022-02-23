@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Header from "./components/Header";
-import Home from "./Routes/Home";
+import Home from "./routes/Home";
 
 function App() {
   return (
     <Router>
       <Header />
       <Switch>
-        <Route path={["/", "/login"]}>
+        <Route exact path={["/", "/login"]}>
           <Home />
         </Route>
         <Route path="/users">{/* <Users /> */}</Route>

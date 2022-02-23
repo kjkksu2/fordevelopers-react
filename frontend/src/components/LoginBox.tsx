@@ -8,11 +8,11 @@ interface ILoginBoxProps {
 const Container = styled(motion.div)`
   position: absolute;
   background-color: #e1ecf5;
-  border-radius: 10px;
-  top: 50%;
-  transform: translateY(-40%);
+  top: 100%;
+  right: 0;
+  color: black;
   display: flex;
-  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
 
   img {
     width: 300px;
@@ -53,7 +53,9 @@ const Login = styled.div`
 `;
 
 function LoginBox({ layoutId }: ILoginBoxProps) {
-  function googleClicked() {}
+  async function googleClicked() {
+    window.location.href = "http://localhost:4000/users/google/login";
+  }
 
   return (
     <Container layoutId={layoutId}>

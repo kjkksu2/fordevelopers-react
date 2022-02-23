@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { RecoilRoot } from "recoil";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import App from "./App";
 import theme from "./theme";
@@ -26,8 +27,10 @@ const GlobalStyle = createGlobalStyle`
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <App />
+      <RecoilRoot>
+        <GlobalStyle />
+        <App />
+      </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")

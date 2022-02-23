@@ -1,7 +1,10 @@
 import styled from "styled-components";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import LoginBox from "./LoginBox";
+import { useRecoilValue } from "recoil";
+import { isLoggedIn } from "../recoil/atom";
 
 const Container = styled.header`
   position: fixed;
@@ -59,7 +62,8 @@ const Login = styled(motion.li)`
 
 function Header() {
   const history = useHistory();
-  const [login, setLogin] = useState<boolean>(false);
+  const loginMatch = useRouteMatch("/login");
+  const loginState = useRecoilValue(isLoggedIn);
 
   function loginClicked() {
     history.push("/login");
@@ -78,7 +82,7 @@ function Header() {
         <Link to="#">게시판</Link>
       </Menu>
       <User>
-        {login ? (
+        {loginState ? (
           <>
             <Link to="/users/profile">프로필</Link>
             <Link to="/logout">로그아웃</Link>
@@ -90,6 +94,9 @@ function Header() {
           </Login>
         )}
       </User>
+      <AnimatePresence>
+        {loginMatch ? <LoginBox layoutId="login" /> : null}
+      </AnimatePresence>
     </Container>
   );
 }
