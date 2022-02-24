@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
+import { useHistory } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { corsUrl } from "../../recoil/atom";
 
 interface ILoginBoxProps {
   layoutId: string;
@@ -53,8 +56,12 @@ const Login = styled.div`
 `;
 
 function LoginBox({ layoutId }: ILoginBoxProps) {
+  const history = useHistory();
+  const backendUrl = useRecoilValue(corsUrl);
+
   async function googleClicked() {
-    window.location.href = "http://localhost:4000/users/google/login";
+    localStorage.setItem("loginClickedPosition", history.location.pathname);
+    window.location.href = `${backendUrl}/users/google/login`;
   }
 
   return (

@@ -1,10 +1,13 @@
 import styled from "styled-components";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import LoginBox from "./LoginBox";
-import { useRecoilValue } from "recoil";
-import { isLoggedIn } from "../recoil/atom";
+import LoginBox from "../auth/LoginBox";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { isLoggedIn, isLoginBtnClicked } from "../../recoil/atom";
+import Logout from "../auth/Logout";
+import Profile from "../user/Profile";
+import UserDelete from "../auth/UserDelete";
+import { useEffect } from "react";
 
 const Container = styled.header`
   position: fixed;
@@ -48,8 +51,11 @@ const Menu = styled.ul`
 
 const User = styled.ul`
   justify-self: end;
+  display: flex;
 
-  a {
+  li {
+    cursor: pointer;
+
     &:not(:first-child) {
       margin-left: 30px;
     }
@@ -61,12 +67,19 @@ const Login = styled(motion.li)`
 `;
 
 function Header() {
-  const history = useHistory();
-  const loginMatch = useRouteMatch("/login");
   const loginState = useRecoilValue(isLoggedIn);
+  const [valIsLoginBtnClicked, setIsLoginBtnClicked] =
+    useRecoilState(isLoginBtnClicked);
+  const setIsLoggedIn = useSetRecoilState(isLoggedIn);
+
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   function loginClicked() {
-    history.push("/login");
+    setIsLoginBtnClicked(true);
   }
 
   return (
@@ -78,15 +91,15 @@ function Header() {
         </Link>
       </Logo>
       <Menu>
-        <Link to="#">Dev</Link>
-        <Link to="#">게시판</Link>
+        <Link to="/devs">Dev</Link>
+        <Link to="/boards">게시판</Link>
       </Menu>
       <User>
         {loginState ? (
           <>
-            <Link to="/users/profile">프로필</Link>
-            <Link to="/logout">로그아웃</Link>
-            <Link to="/users/delete">회원탈퇴</Link>
+            <Profile />
+            <Logout />
+            <UserDelete />
           </>
         ) : (
           <Login onClick={loginClicked} layoutId="login">
@@ -95,7 +108,7 @@ function Header() {
         )}
       </User>
       <AnimatePresence>
-        {loginMatch ? <LoginBox layoutId="login" /> : null}
+        {valIsLoginBtnClicked ? <LoginBox layoutId="login" /> : null}
       </AnimatePresence>
     </Container>
   );

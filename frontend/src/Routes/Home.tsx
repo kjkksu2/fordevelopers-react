@@ -1,9 +1,7 @@
-import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import Slogan from "../components/Slogan";
-import { isLoggedIn } from "../recoil/atom";
+import { isLoginBtnClicked } from "../recoil/atom";
 
 const Container = styled.main`
   height: 100vh;
@@ -36,28 +34,14 @@ const HomeSection = styled.section`
 `;
 
 function Home() {
-  const history = useHistory();
-  const setLoginState = useSetRecoilState(isLoggedIn);
+  const setLoginBtnClicked = useSetRecoilState(isLoginBtnClicked);
 
-  function bgClicked() {
-    history.push("/");
+  function containerClicked() {
+    setLoginBtnClicked(false);
   }
 
-  useEffect(() => {
-    async function checkUserLoggedIn() {
-      const response = await fetch("http://localhost:4000/users/auth", {
-        credentials: "include",
-      });
-      const user = await response.json();
-
-      if (user) setLoginState(true);
-    }
-
-    checkUserLoggedIn();
-  }, []);
-
   return (
-    <Container onClick={bgClicked}>
+    <Container onClick={containerClicked}>
       <Slogan />
       <HomeSection>
         <img className="bgImage" src="/images/hufs1.jpg" />

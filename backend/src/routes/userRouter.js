@@ -1,6 +1,10 @@
 import express from "express";
 import passport from "passport";
-import { authUser, googleLoginFinish } from "../controllers/userController";
+import {
+  googleLoginFinish,
+  logout,
+  authUser,
+} from "../controllers/userController";
 import "../passport";
 
 const userRouter = express.Router();
@@ -16,10 +20,15 @@ userRouter.get(
 userRouter.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:3000/login",
+    failureRedirect: "http://localhost:3000/",
   }),
   googleLoginFinish
 );
+
+/********************************
+          구글 로그아웃
+********************************/
+userRouter.get("/google/logout", logout);
 
 /********************************
         로그인 했는지 확인

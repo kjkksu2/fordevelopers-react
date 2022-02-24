@@ -37,13 +37,20 @@ export const googleLoginFinish = (req, res) => {
   req.session.user = req.user;
   req.session.loggedIn = true;
 
-  return res.redirect("http://localhost:3000/");
+  return res.redirect("http://localhost:3000/login/success");
+};
+
+/********************************
+          구글 로그아웃
+********************************/
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.sendStatus(200);
 };
 
 /********************************
         로그인 했는지 확인
 ********************************/
 export const authUser = (req, res) => {
-  const user = req.session.user ?? null;
-  return res.json(user);
+  return res.json(req.session.user);
 };
