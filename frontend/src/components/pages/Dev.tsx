@@ -1,19 +1,29 @@
-import { useSetRecoilState } from "recoil";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { isLoginBtnClicked } from "../../recoil/atom";
+import Board from "../common/Board";
 
 const Container = styled.div`
-  height: 100vh;
+  margin-top: 150px;
+`;
+
+const Text = styled.div`
+  text-align: end;
+
+  a {
+    background-color: ${(props) => props.theme.bgColors.lighter};
+    color: white;
+  }
 `;
 
 function Dev() {
-  const setLoginClickedState = useSetRecoilState(isLoginBtnClicked);
-
-  function onClick() {
-    setLoginClickedState(false);
-  }
-
-  return <Container onClick={onClick}></Container>;
+  return (
+    <Container>
+      <Text>
+        <Link to="/devs/enrollment">등록하기</Link>
+      </Text>
+      <Board />
+    </Container>
+  );
 }
 
 export default Dev;

@@ -5,6 +5,7 @@ import passport from "passport";
 import dotenv from "dotenv";
 import MongoStore from "connect-mongo";
 import userRouter from "./routes/userRouter";
+import menuRouter from "./routes/menuRouter";
 
 const app = express();
 
@@ -31,5 +32,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/users", userRouter);
+app.use("/menus", menuRouter);
 
 export default app;

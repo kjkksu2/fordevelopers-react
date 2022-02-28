@@ -12,6 +12,11 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     user-select: none;
     font-family: "Poppins", sans-serif;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
   }
 
   a{

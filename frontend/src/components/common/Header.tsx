@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useRouteMatch } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import LoginBox from "../auth/LoginBox";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -9,13 +9,13 @@ import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
 import { useEffect } from "react";
 
-const Container = styled.header`
+const Container = styled.header<{ isActive?: boolean }>`
   position: fixed;
   z-index: 99;
-  top: 3%;
+  top: ${(props) => (props.isActive ? "3%" : "0")};
   left: 50%;
   transform: translateX(-50%);
-  width: 95%;
+  width: ${(props) => (props.isActive ? "95%" : "100%")};
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
@@ -23,6 +23,8 @@ const Container = styled.header`
   white-space: nowrap;
   background-color: ${(props) => props.theme.bgColors.darker};
   color: ${(props) => props.theme.textColors.main};
+  transition-property: top, width;
+  transition: 0.3s ease;
 `;
 
 const Logo = styled.div`
@@ -71,6 +73,7 @@ function Header() {
   const [valIsLoginBtnClicked, setIsLoginBtnClicked] =
     useRecoilState(isLoginBtnClicked);
   const setIsLoggedIn = useSetRecoilState(isLoggedIn);
+  const isHome = useRouteMatch("/");
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
@@ -83,7 +86,7 @@ function Header() {
   }
 
   return (
-    <Container>
+    <Container isActive={isHome?.isExact}>
       <Logo>
         <Link to="/">
           <span>For</span>
