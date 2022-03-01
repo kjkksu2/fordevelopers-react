@@ -22,7 +22,7 @@ const Number = styled.h1`
 `;
 
 const Text = styled.section`
-  color: ${(props) => props.theme.textColors.main};
+  color: white;
   position: relative;
   left: 200px;
   top: 150px;

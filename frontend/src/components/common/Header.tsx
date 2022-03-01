@@ -22,7 +22,7 @@ const Container = styled.header<{ isActive?: boolean }>`
   padding: 20px 100px;
   white-space: nowrap;
   background-color: ${(props) => props.theme.bgColors.darker};
-  color: ${(props) => props.theme.textColors.main};
+  color: white;
   transition-property: top, width;
   transition: 0.3s ease;
 `;

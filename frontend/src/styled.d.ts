@@ -9,8 +9,13 @@ declare module "styled-components" {
       lighter: string;
       darker: string;
     };
-    textColors: {
-      main: string;
+    isHere: {
+      online: string;
+      offline: string;
+    };
+    postColors: {
+      content: string;
+      comment: string;
     };
   }
 }

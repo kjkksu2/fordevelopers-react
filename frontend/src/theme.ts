@@ -6,8 +6,13 @@ const theme: DefaultTheme = {
     lighter: "#4f83cc",
     darker: "#002f6c",
   },
-  textColors: {
-    main: "white",
+  isHere: {
+    online: "#27ae60",
+    offline: "#e74c3c",
+  },
+  postColors: {
+    content: "#0288d1",
+    comment: "#6ec6ff",
   },
 };
 
