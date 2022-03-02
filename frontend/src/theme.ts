@@ -14,6 +14,10 @@ const theme: DefaultTheme = {
     content: "#0288d1",
     comment: "#6ec6ff",
   },
+  commentColors: {
+    opponent: "#F3F6FB",
+    me: "#1A233B",
+  },
 };
 
 export default theme;

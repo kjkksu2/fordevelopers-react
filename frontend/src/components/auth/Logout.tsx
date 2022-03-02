@@ -12,7 +12,9 @@ function Logout() {
     const answer = window.confirm("로그아웃 하시겠습니까?");
 
     if (answer) {
-      const response = await fetch(`${backendUrl}/users/google/logout`);
+      const response = await fetch(`${backendUrl}/users/google/logout`, {
+        credentials: "include",
+      });
 
       if (response.status === 200) {
         setIsLoggedIn(false);

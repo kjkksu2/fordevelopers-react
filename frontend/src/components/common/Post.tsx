@@ -42,7 +42,7 @@ function Post({ post }: IPost) {
       exit={{ opacity: 0 }}
     >
       <PostText post={post} />
-      <PostComment />
+      <PostComment postId={post?._id} />
     </Container>
   );
 }

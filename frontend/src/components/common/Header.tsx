@@ -3,7 +3,7 @@ import { Link, useRouteMatch } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import LoginBox from "../auth/LoginBox";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { isLoggedIn, isLoginBtnClicked } from "../../recoil/atom";
+import { corsUrl, isLoggedIn, isLoginBtnClicked } from "../../recoil/atom";
 import Logout from "../auth/Logout";
 import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
@@ -69,6 +69,7 @@ const Login = styled(motion.li)`
 `;
 
 function Header() {
+  const backendUrl = useRecoilValue(corsUrl);
   const loginState = useRecoilValue(isLoggedIn);
   const [valIsLoginBtnClicked, setIsLoginBtnClicked] =
     useRecoilState(isLoginBtnClicked);
@@ -76,9 +77,19 @@ function Header() {
   const isHome = useRouteMatch("/");
 
   useEffect(() => {
+    // 개인이 로그인 했는지 확인
     if (localStorage.getItem("user")) {
       setIsLoggedIn(true);
     }
+
+    // 로그인한 모든 유저 가져오기
+    async function fetcher() {
+      await fetch(`${backendUrl}/users/loggedIn`, {
+        credentials: "include",
+      });
+    }
+
+    fetcher();
   }, []);
 
   function loginClicked() {

@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   },
   nickname: {
     type: String,
-    required: true,
+    // required: true,
   },
   introduction: {
     type: String,
@@ -23,11 +23,11 @@ const userSchema = new mongoose.Schema({
   },
   department: {
     type: String,
-    required: true,
+    // required: true,
   },
   goToSchool: {
     type: String,
-    required: true,
+    // required: true,
   },
   github_url: {
     type: String,

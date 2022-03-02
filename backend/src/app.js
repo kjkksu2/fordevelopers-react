@@ -25,6 +25,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: process.env.DB_URL }),
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 하루
   })
 );
 

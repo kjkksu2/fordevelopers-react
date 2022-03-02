@@ -1,4 +1,5 @@
 import User from "../models/User";
+import LoggedInUser from "../models/LoggedInUser";
 
 /********************************
           구글 로그인
@@ -12,19 +13,27 @@ export const googleCallback = async (_, __, profile, done) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      const name = given_name.split("[")[0];
-      const rest = given_name.split("[")[1].replace("]", "");
-      const [goToSchool, department] = rest.split("/");
-
       user = await User.create({
-        name,
-        nickname: name,
+        name: given_name,
         image_url,
         email,
-        department: department.trim(),
-        goToSchool: goToSchool.trim(),
       });
     }
+
+    // if (!user) {
+    //   const name = given_name.split("[")[0];
+    //   const rest = given_name.split("[")[1].replace("]", "");
+    //   const [goToSchool, department] = rest.split("/");
+
+    //   user = await User.create({
+    //     name,
+    //     nickname: name,
+    //     image_url,
+    //     email,
+    //     department: department.trim(),
+    //     goToSchool: goToSchool.trim(),
+    //   });
+    // }
 
     return done(null, user);
   } catch (error) {
@@ -33,7 +42,14 @@ export const googleCallback = async (_, __, profile, done) => {
   }
 };
 
-export const googleLoginFinish = (req, res) => {
+export const googleLoginFinish = async (req, res) => {
+  // 모든 유저
+  await LoggedInUser.create({ user: req.user });
+  setTimeout(async () => {
+    await LoggedInUser.findOneAndDelete({ user: req.session.user }); // 하루 뒤 로그아웃
+  }, 24 * 60 * 60 * 1000);
+
+  // 개인
   req.session.user = req.user;
   req.session.loggedIn = true;
 
@@ -43,14 +59,59 @@ export const googleLoginFinish = (req, res) => {
 /********************************
           구글 로그아웃
 ********************************/
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  // 모든 유저
+  await LoggedInUser.findOneAndDelete({ user: req.session.user });
+  console.log("logout");
+
+  // 개인
   req.session.destroy();
+
   return res.sendStatus(200);
 };
 
 /********************************
-        로그인 했는지 확인
+        유저 정보 가져오기
 ********************************/
-export const authUser = (req, res) => {
+export const authUser = async (req, res) => {
   return res.json(req.session.user);
+};
+
+/********************************
+      로그인한 유저 리스트
+********************************/
+export const loggedInUserLists = () => {};
+
+/********************************
+      유저가 웹을 닫은 경우
+********************************/
+export const webClosed = async (req, _) => {
+  try {
+    const {
+      body: { userId },
+    } = req;
+
+    const user = await User.findById(userId);
+    console.log("close");
+    await LoggedInUser.findOneAndDelete({ user });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/********************************
+      유저가 웹을 연 경우
+********************************/
+export const webOpen = async (req, _) => {
+  try {
+    const {
+      body: { userId },
+    } = req;
+
+    const user = await User.findById(userId);
+    console.log("open");
+    await LoggedInUser.create({ user });
+  } catch (error) {
+    console.log(error);
+  }
 };

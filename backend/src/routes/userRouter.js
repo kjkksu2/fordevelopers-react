@@ -4,6 +4,9 @@ import {
   googleLoginFinish,
   logout,
   authUser,
+  loggedInUserLists,
+  webClosed,
+  webOpen,
 } from "../controllers/userController";
 import "../passport";
 
@@ -31,8 +34,23 @@ userRouter.get(
 userRouter.get("/google/logout", logout);
 
 /********************************
-        로그인 했는지 확인
+        유저 정보 가져오기
 ********************************/
 userRouter.get("/auth", authUser);
+
+/********************************
+      로그인한 유저 리스트
+********************************/
+userRouter.get("/loginLists", loggedInUserLists);
+
+/********************************
+      유저가 웹을 닫은 경우
+********************************/
+userRouter.post("/web/close", webClosed);
+
+/********************************
+      유저가 웹을 연 경우
+********************************/
+userRouter.post("/web/open", webOpen);
 
 export default userRouter;

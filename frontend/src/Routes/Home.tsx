@@ -36,7 +36,7 @@ const HomeSection = styled.section`
 function Home() {
   const setLoginBtnClicked = useSetRecoilState(isLoginBtnClicked);
 
-  function containerClicked() {
+  async function containerClicked() {
     setLoginBtnClicked(false);
   }
 

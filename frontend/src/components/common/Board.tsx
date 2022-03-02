@@ -11,7 +11,7 @@ import Post from "./Post";
 const Container = styled.ul`
   width: 100%;
 
-  li {
+  .board {
     margin: 0 300px;
     margin-bottom: 10px;
     display: flex;
@@ -175,7 +175,7 @@ interface IArticleLists {
 
 function Board() {
   const backendUrl = useRecoilValue(corsUrl);
-  const isHere = useRecoilValue(isLoggedIn);
+  const login = useRecoilValue(isLoggedIn);
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
   const history = useHistory();
   const postMatch = useRouteMatch<{ id: string }>("/devs/:id([0-9a-f]{24})");
@@ -265,7 +265,7 @@ function Board() {
   }
 
   useEffect(() => {
-    async function fetcher() {
+    async function boardFetcher() {
       const response = await fetch(`${backendUrl}/menus/devs/board`, {
         credentials: "include",
       });
@@ -276,7 +276,7 @@ function Board() {
       }
     }
 
-    fetcher();
+    boardFetcher();
   }, []);
 
   return (
@@ -284,10 +284,11 @@ function Board() {
       {articleLists.map((item, idx) => (
         <motion.li
           key={idx}
+          className="board"
           whileHover={{ x: 20 }}
           onClick={() => articleClicked(item._id)}
         >
-          <Writer isHere={isHere}>
+          <Writer isHere={login}>
             <div className="first-row">
               <img src={item.user.image_url} />
               <div className="online-bg">

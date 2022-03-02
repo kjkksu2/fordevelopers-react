@@ -17,5 +17,9 @@ declare module "styled-components" {
       content: string;
       comment: string;
     };
+    commentColors: {
+      opponent: string;
+      me: string;
+    };
   }
 }
