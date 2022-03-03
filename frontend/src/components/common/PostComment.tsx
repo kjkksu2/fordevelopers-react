@@ -6,6 +6,8 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { corsUrl } from "../../recoil/atom";
 import CommentLists from "./CommentLists";
+import { useMutation } from "react-query";
+import { comment } from "../../reactQuery/common";
 
 const Comment = styled.article`
   width: 400px;
@@ -77,24 +79,14 @@ interface IComment {
 }
 
 function PostComment({ postId }: IPostComment) {
-  const backendUrl = useRecoilValue(corsUrl);
   const [commentBox, setCommentBox] = useState<string>("");
   const [enrollComment, setEnrollComment] = useState<boolean>(false);
+  const mutation = useMutation(comment);
 
   async function commentSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = await fetch(
-      `${backendUrl}/menus/devs/post/${postId}/comment`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ commentBox }),
-      }
-    );
+    const response = await mutation.mutateAsync({ postId, commentBox });
 
     if (response.status === 200) {
       setEnrollComment(true);

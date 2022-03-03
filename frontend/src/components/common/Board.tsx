@@ -1,11 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
-import { corsUrl, isLoggedIn } from "../../recoil/atom";
+import { isLoggedIn } from "../../recoil/atom";
 import Post from "./Post";
 
 const Container = styled.ul`
@@ -155,7 +154,7 @@ const Overlay = styled(motion.div)`
   background-color: black;
 `;
 
-interface IArticleLists {
+interface IArticleListsElements {
   _id: string;
   title: string;
   content: string;
@@ -173,10 +172,12 @@ interface IArticleLists {
   comment: [];
 }
 
-function Board() {
-  const backendUrl = useRecoilValue(corsUrl);
+interface IArticleLists {
+  articleLists: IArticleListsElements[];
+}
+
+function Board({ articleLists }: IArticleLists) {
   const login = useRecoilValue(isLoggedIn);
-  const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
   const history = useHistory();
   const postMatch = useRouteMatch<{ id: string }>("/devs/:id([0-9a-f]{24})");
 
@@ -263,21 +264,6 @@ function Board() {
   function overlayClicked() {
     history.push("/devs");
   }
-
-  useEffect(() => {
-    async function boardFetcher() {
-      const response = await fetch(`${backendUrl}/menus/devs/board`, {
-        credentials: "include",
-      });
-
-      if (response.status === 200) {
-        const json = await response.json();
-        setArticleLists(json);
-      }
-    }
-
-    boardFetcher();
-  }, []);
 
   return (
     <Container>

@@ -3,19 +3,6 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { corsUrl } from "../../recoil/atom";
 
-interface ICommentLists {
-  postId?: string;
-}
-
-interface IList {
-  content: string;
-  created_at: string;
-  user: {
-    nickname: string;
-    image_url: string;
-  };
-}
-
 const Container = styled.ul``;
 
 const Comment = styled.li`
@@ -63,11 +50,27 @@ const Comment = styled.li`
   }
 `;
 
+interface ICommentLists {
+  postId?: string;
+}
+
+interface IList {
+  content: string;
+  created_at: string;
+  user: {
+    nickname: string;
+    image_url: string;
+  };
+}
+
 function CommentLists({ postId }: ICommentLists) {
   const backendUrl = useRecoilValue(corsUrl);
   const [lists, setLists] = useState<IList[]>([]);
   const [time, setTime] = useState("");
 
+  // useQuery는 비동기적으로 작동하기 때문에
+  // 다른 commentLists를 가져오는 동안에 이전에 저장된 commentLists가 출력된다.
+  // 그리고 또 한번 최신의 commentLists가 호출되기 때문에 중복 호출된다.
   useEffect(() => {
     async function fetcher() {
       const response = await fetch(
@@ -98,7 +101,7 @@ function CommentLists({ postId }: ICommentLists) {
       }
     }
 
-    if (postId) fetcher();
+    fetcher();
   }, [postId]);
 
   function dateTime(created_at: string) {

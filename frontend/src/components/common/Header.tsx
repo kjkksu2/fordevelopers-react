@@ -83,13 +83,13 @@ function Header() {
     }
 
     // 로그인한 모든 유저 가져오기
-    async function fetcher() {
-      await fetch(`${backendUrl}/users/loggedIn`, {
-        credentials: "include",
-      });
-    }
+    // async function fetcher() {
+    //   await fetch(`${backendUrl}/users/loggedIn`, {
+    //     credentials: "include",
+    //   });
+    // }
 
-    fetcher();
+    // fetcher();
   }, []);
 
   function loginClicked() {

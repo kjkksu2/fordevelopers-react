@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { RecoilRoot } from "recoil";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import App from "./App";
 import theme from "./theme";
 
@@ -29,13 +31,18 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <RecoilRoot>
-        <GlobalStyle />
-        <App />
-      </RecoilRoot>
+      <QueryClientProvider client={queryClient}>
+        <RecoilRoot>
+          <GlobalStyle />
+          <App />
+        </RecoilRoot>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")

@@ -95,8 +95,6 @@ export const commentLists = async (req, res) => {
         .sort({ _id: -1 });
     }
 
-    // console.log(commentLists);
-
     return res.status(200).json(commentLists);
   } catch (error) {
     console.log(error);

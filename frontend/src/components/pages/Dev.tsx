@@ -1,10 +1,22 @@
-import { Link, useHistory, useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { getPostLists } from "../../reactQuery/pages";
 import Board from "../common/Board";
 
 const Container = styled.div`
   padding-top: 150px;
   background-color: ${(props) => props.theme.bgColors.main};
+  min-height: 100vh;
+
+  .loading {
+    width: 100%;
+    display: block;
+    text-align: center;
+    font-size: 50px;
+    color: white;
+  }
 `;
 
 const Text = styled.div`
@@ -31,15 +43,50 @@ const Text = styled.div`
   }
 `;
 
+interface IArticleLists {
+  _id: string;
+  title: string;
+  content: string;
+  like: number;
+  choice: number;
+  views: number;
+  user: {
+    nickname: string;
+    image_url: string;
+    department: string;
+    goToSchool: string;
+    like: number;
+  };
+  created_at: string;
+  comment: [];
+}
+
 function Dev() {
+  const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
+  const { isLoading, data } = useQuery("board", getPostLists, {
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (data?.status === 200) {
+      setArticleLists(data?.postLists);
+    }
+  }, [data?.postLists]);
+
   return (
     <Container>
-      <Text>
-        <span>Dev</span>
-        <span>검색</span>
-        <Link to="/devs/enrollment">글쓰기</Link>
-      </Text>
-      <Board />
+      {isLoading ? (
+        <span className="loading">Loading...</span>
+      ) : (
+        <>
+          <Text>
+            <span>Dev</span>
+            <span>검색</span>
+            <Link to="/devs/enrollment">글쓰기</Link>
+          </Text>
+          <Board articleLists={articleLists} />
+        </>
+      )}
     </Container>
   );
 }

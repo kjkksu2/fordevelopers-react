@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useMutation } from "react-query";
 import styled from "styled-components";
-import { corsUrl } from "../../recoil/atom";
+import { enrollment } from "../../reactQuery/common";
 
 const Form = styled.form`
   width: 100%;
@@ -32,21 +32,15 @@ const Submit = styled.input`
 `;
 
 function Enrollment() {
-  const backendUrl = useRecoilValue(corsUrl);
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
+  const mutation = useMutation(enrollment);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = await fetch(`${backendUrl}/menus/devs/enrollment`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title, content }),
-    });
+    // 응답까지 받는 방법
+    const response = await mutation.mutateAsync({ title, content });
 
     if (response.status === 200) {
       window.location.href = "/devs";

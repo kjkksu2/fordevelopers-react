@@ -12,6 +12,9 @@ function Logout() {
     const answer = window.confirm("로그아웃 하시겠습니까?");
 
     if (answer) {
+      // useQuery는 함수 안에서 사용할 수 없다.
+      // 그렇다고 Component에서 사용하면 클릭하기도 전에 logout 상태가 되므로
+      // fetch를 사용했다.
       const response = await fetch(`${backendUrl}/users/google/logout`, {
         credentials: "include",
       });
