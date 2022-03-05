@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
 
-const Text = styled.article`
+const Container = styled.section`
   position: relative;
   width: 500px;
   background-color: ${(props) => props.theme.postColors.content};
@@ -22,7 +22,7 @@ const Text = styled.article`
   overflow-y: scroll;
 `;
 
-const FirstRow = styled.div`
+const User = styled.article`
   position: fixed;
   top: 100px;
   transform: translateX(-20px);
@@ -81,7 +81,7 @@ const Options = styled.div`
   }
 `;
 
-const SecondRow = styled.div`
+const Content = styled.article`
   padding-top: 85px;
 
   h1,
@@ -219,8 +219,8 @@ function PostText({ post }: IPostText) {
   }
 
   return (
-    <Text>
-      <FirstRow>
+    <Container>
+      <User>
         <Writer>
           <div className="first-column">
             <img src={post?.user.image_url} />
@@ -243,11 +243,11 @@ function PostText({ post }: IPostText) {
             <span>크게</span>
           </div>
         </Options>
-      </FirstRow>
-      <SecondRow>
+      </User>
+      <Content>
         <h1>{post?.title}</h1>
         <p>{post?.content}</p>
-      </SecondRow>
+      </Content>
       <RestOptions>
         <motion.div className="ellipsis-icon" onClick={ellipsisClicked}>
           <FontAwesomeIcon icon={faEllipsisV} />
@@ -290,7 +290,7 @@ function PostText({ post }: IPostText) {
           </EllipsisBox>
         ) : null}
       </AnimatePresence>
-    </Text>
+    </Container>
   );
 }
 

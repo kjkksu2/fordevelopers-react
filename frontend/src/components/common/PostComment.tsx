@@ -9,7 +9,7 @@ import CommentLists from "./CommentLists";
 import { useMutation } from "react-query";
 import { comment } from "../../reactQuery/common";
 
-const Comment = styled.article`
+const Container = styled.section`
   width: 400px;
   text-align: center;
   background-color: ${(props) => props.theme.postColors.comment};
@@ -17,7 +17,7 @@ const Comment = styled.article`
   overflow-y: scroll;
 `;
 
-const FirstRow = styled.div`
+const Input = styled.article`
   position: fixed;
   top: 100px;
   transform: translateX(-20px);
@@ -59,7 +59,7 @@ const FirstRow = styled.div`
   }
 `;
 
-const SecondRow = styled.div`
+const Content = styled.article`
   padding-top: 100px;
 `;
 
@@ -79,44 +79,44 @@ interface IComment {
 }
 
 function PostComment({ postId }: IPostComment) {
-  const [commentBox, setCommentBox] = useState<string>("");
-  const [enrollComment, setEnrollComment] = useState<boolean>(false);
+  const [input, setInput] = useState<string>("");
   const mutation = useMutation(comment);
 
-  async function commentSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = await mutation.mutateAsync({ postId, commentBox });
+    const response = await mutation.mutateAsync({ postId, input });
 
     if (response.status === 200) {
-      setEnrollComment(true);
       const json = await response.json();
+      console.log(json);
+      setInput("");
     }
   }
 
-  function commentChange(event: React.FormEvent<HTMLInputElement>) {
+  function onInput(event: React.FormEvent<HTMLInputElement>) {
     const {
       currentTarget: { value },
     } = event;
 
-    setCommentBox(value);
+    setInput(value);
   }
 
   return (
-    <Comment>
-      <FirstRow>
+    <Container>
+      <Input>
         <h1>댓글</h1>
-        <form onSubmit={commentSubmit}>
-          <input onChange={commentChange} placeholder="댓글 쓰기" />
+        <form onSubmit={onSubmit}>
+          <input onInput={onInput} placeholder="댓글 쓰기" />
           <button type="submit">
             <FontAwesomeIcon icon={faPencil} />
           </button>
         </form>
-      </FirstRow>
-      <SecondRow>
+      </Input>
+      <Content>
         <CommentLists postId={postId} />
-      </SecondRow>
-    </Comment>
+      </Content>
+    </Container>
   );
 }
 

@@ -3,19 +3,19 @@ import { Link, useRouteMatch } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import LoginBox from "../auth/LoginBox";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { corsUrl, isLoggedIn, isLoginBtnClicked } from "../../recoil/atom";
+import { corsUrl, isLoggedIn, loginBtn } from "../../recoil/atom";
 import Logout from "../auth/Logout";
 import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
 import { useEffect } from "react";
 
-const Container = styled.header<{ isActive?: boolean }>`
+const Container = styled.header<{ isHome?: boolean }>`
   position: fixed;
   z-index: 99;
-  top: ${(props) => (props.isActive ? "3%" : "0")};
+  top: ${(props) => (props.isHome ? "3%" : "0")};
   left: 50%;
   transform: translateX(-50%);
-  width: ${(props) => (props.isActive ? "95%" : "100%")};
+  width: ${(props) => (props.isHome ? "95%" : "100%")};
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
@@ -70,16 +70,14 @@ const Login = styled(motion.li)`
 
 function Header() {
   const backendUrl = useRecoilValue(corsUrl);
-  const loginState = useRecoilValue(isLoggedIn);
-  const [valIsLoginBtnClicked, setIsLoginBtnClicked] =
-    useRecoilState(isLoginBtnClicked);
-  const setIsLoggedIn = useSetRecoilState(isLoggedIn);
+  const [getLoginBtn, setLoginBtn] = useRecoilState(loginBtn);
+  const [loginState, setLoginState] = useRecoilState(isLoggedIn);
   const isHome = useRouteMatch("/");
 
   useEffect(() => {
     // 개인이 로그인 했는지 확인
     if (localStorage.getItem("user")) {
-      setIsLoggedIn(true);
+      setLoginState(true);
     }
 
     // 로그인한 모든 유저 가져오기
@@ -92,12 +90,12 @@ function Header() {
     // fetcher();
   }, []);
 
-  function loginClicked() {
-    setIsLoginBtnClicked(true);
+  function loginBtnClicked() {
+    setLoginBtn(true);
   }
 
   return (
-    <Container isActive={isHome?.isExact}>
+    <Container isHome={isHome?.isExact}>
       <Logo>
         <Link to="/">
           <span>For</span>
@@ -116,13 +114,13 @@ function Header() {
             <UserDelete />
           </>
         ) : (
-          <Login onClick={loginClicked} layoutId="login">
+          <Login onClick={loginBtnClicked} layoutId="login">
             로그인
           </Login>
         )}
       </User>
       <AnimatePresence>
-        {valIsLoginBtnClicked ? <LoginBox layoutId="login" /> : null}
+        {getLoginBtn ? <LoginBox layoutId="login" /> : null}
       </AnimatePresence>
     </Container>
   );

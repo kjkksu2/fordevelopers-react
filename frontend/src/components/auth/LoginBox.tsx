@@ -4,10 +4,6 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { corsUrl } from "../../recoil/atom";
 
-interface ILoginBoxProps {
-  layoutId: string;
-}
-
 const Container = styled(motion.div)`
   position: absolute;
   background-color: #e1ecf5;
@@ -21,6 +17,8 @@ const Container = styled(motion.div)`
     width: 300px;
   }
 `;
+
+const Image = styled.img``;
 
 const Text = styled.section`
   background-color: white;
@@ -55,7 +53,11 @@ const Login = styled.div`
   }
 `;
 
-function LoginBox({ layoutId }: ILoginBoxProps) {
+interface ILoginBox {
+  layoutId: string;
+}
+
+function LoginBox({ layoutId }: ILoginBox) {
   const history = useHistory();
   const backendUrl = useRecoilValue(corsUrl);
 
@@ -66,7 +68,7 @@ function LoginBox({ layoutId }: ILoginBoxProps) {
 
   return (
     <Container layoutId={layoutId}>
-      <img src="/images/login.jpg" />
+      <Image src="/images/login.jpg" />
       <Text>
         <Title>Welcome</Title>
         <Alert>

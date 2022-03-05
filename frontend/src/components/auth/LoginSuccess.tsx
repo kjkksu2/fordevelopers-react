@@ -7,14 +7,14 @@ import { isLoggedIn } from "../../recoil/atom";
 
 function LoginSuccess() {
   const history = useHistory();
-  const setIsLoggedIn = useSetRecoilState(isLoggedIn);
+  const setLoginState = useSetRecoilState(isLoggedIn);
   const { data: user } = useQuery("user", getUserData, {
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     if (user) {
-      setIsLoggedIn(true);
+      setLoginState(true);
       localStorage.setItem("user", JSON.stringify(user));
 
       const url = localStorage.getItem("loginClickedPosition");

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PostComment from "./PostComment";
 import PostText from "./PostText";
 
-const Container = styled(motion.section)`
+const Container = styled(motion.main)`
   position: fixed;
   top: 100px;
   left: 0;

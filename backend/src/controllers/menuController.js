@@ -11,6 +11,8 @@ export const enrollment = async (req, res) => {
       params: { categories },
     } = req;
 
+    console.log("hi");
+
     let article = null;
     if (categories === "devs") {
       article = await Dev.create({
@@ -54,7 +56,7 @@ export const board = async (req, res) => {
 export const comment = async (req, res) => {
   try {
     const {
-      body: { commentBox: content },
+      body: { input: content },
       params: { categories, postId },
       session: {
         user: { _id },

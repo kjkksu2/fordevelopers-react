@@ -41,7 +41,7 @@ ReactDOM.render(
           <GlobalStyle />
           <App />
         </RecoilRoot>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </ThemeProvider>
   </React.StrictMode>,

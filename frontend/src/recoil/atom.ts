@@ -5,8 +5,8 @@ export const corsUrl = atom({
   default: "http://localhost:4000",
 });
 
-export const isLoginBtnClicked = atom({
-  key: "isLoginBtnClicked",
+export const loginBtn = atom({
+  key: "loginBtn",
   default: false,
 });
 
@@ -23,3 +23,12 @@ export const loggedInUserLists = atom<IUser[]>({
   key: "loggedInUserLists",
   default: [],
 });
+
+interface ICommentLists {
+  content: string;
+  created_at: string;
+  user: {
+    nickname: string;
+    image_url: string;
+  };
+}

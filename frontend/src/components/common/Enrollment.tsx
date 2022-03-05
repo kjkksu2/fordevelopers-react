@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import styled from "styled-components";
 import { enrollment } from "../../reactQuery/common";
@@ -31,15 +31,20 @@ const Submit = styled.input`
   cursor: pointer;
 `;
 
+interface IEnrollment {
+  title: string;
+  content: string;
+}
+
 function Enrollment() {
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
   const mutation = useMutation(enrollment);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IEnrollment>();
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    // 응답까지 받는 방법
+  async function onValid({ title, content }: IEnrollment) {
     const response = await mutation.mutateAsync({ title, content });
 
     if (response.status === 200) {
@@ -47,26 +52,23 @@ function Enrollment() {
     }
   }
 
-  function handleTitle(event: React.FormEvent<HTMLInputElement>) {
-    const {
-      currentTarget: { value },
-    } = event;
-
-    setTitle(value);
-  }
-
-  function handleContent(event: React.FormEvent<HTMLTextAreaElement>) {
-    const {
-      currentTarget: { value },
-    } = event;
-
-    setContent(value);
-  }
-
   return (
-    <Form onSubmit={handleSubmit}>
-      <Title onInput={handleTitle} placeholder="제목을 입력하세요." />
-      <Content onInput={handleContent} placeholder="내용을 입력하세요." />
+    <Form onSubmit={handleSubmit(onValid)}>
+      <Title
+        {...register("title", { required: "제목을 입력해주세요." })}
+        placeholder="제목"
+      />
+      <span>{errors.title?.message}</span>
+
+      <Content
+        {...register("content", {
+          minLength: { value: 10, message: "10자 이상 적어주세요." },
+        })}
+        placeholder="내용을 입력하세요."
+        spellCheck={false}
+      />
+      <span>{errors.content?.message}</span>
+
       <Submit type="submit" value="등록하기" />
     </Form>
   );

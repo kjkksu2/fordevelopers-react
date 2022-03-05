@@ -1,14 +1,14 @@
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import Slogan from "../components/Slogan";
-import { isLoginBtnClicked } from "../recoil/atom";
+import { loginBtn } from "../recoil/atom";
 
 const Container = styled.main`
   height: 100vh;
   display: flex;
 `;
 
-const HomeSection = styled.section`
+const Section = styled.section`
   position: relative;
   width: 70%;
   height: 100%;
@@ -34,18 +34,18 @@ const HomeSection = styled.section`
 `;
 
 function Home() {
-  const setLoginBtnClicked = useSetRecoilState(isLoginBtnClicked);
+  const setLoginBtn = useSetRecoilState(loginBtn);
 
-  async function containerClicked() {
-    setLoginBtnClicked(false);
+  async function onClick() {
+    setLoginBtn(false);
   }
 
   return (
-    <Container onClick={containerClicked}>
+    <Container onClick={onClick}>
       <Slogan />
-      <HomeSection>
+      <Section>
         <img className="bgImage" src="/images/hufs1.jpg" />
-      </HomeSection>
+      </Section>
     </Container>
   );
 }

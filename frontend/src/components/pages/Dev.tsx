@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { getPostLists } from "../../reactQuery/pages";
+import { getDevLists } from "../../reactQuery/pages";
 import Board from "../common/Board";
 
-const Container = styled.div`
+const Container = styled.main`
   padding-top: 150px;
   background-color: ${(props) => props.theme.bgColors.main};
   min-height: 100vh;
@@ -19,7 +19,7 @@ const Container = styled.div`
   }
 `;
 
-const Text = styled.div`
+const Text = styled.section`
   padding: 0 300px;
   display: flex;
   justify-content: space-between;
@@ -63,15 +63,15 @@ interface IArticleLists {
 
 function Dev() {
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
-  const { isLoading, data } = useQuery("board", getPostLists, {
+  const { isLoading, data } = useQuery("dev-lists", getDevLists, {
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     if (data?.status === 200) {
-      setArticleLists(data?.postLists);
+      setArticleLists(data?.devLists);
     }
-  }, [data?.postLists]);
+  }, [data?.devLists]);
 
   return (
     <Container>

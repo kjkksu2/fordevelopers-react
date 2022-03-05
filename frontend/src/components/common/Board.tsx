@@ -10,7 +10,7 @@ import Post from "./Post";
 const Container = styled.ul`
   width: 100%;
 
-  .board {
+  .list {
     margin: 0 300px;
     margin-bottom: 10px;
     display: flex;
@@ -177,9 +177,9 @@ interface IArticleLists {
 }
 
 function Board({ articleLists }: IArticleLists) {
-  const login = useRecoilValue(isLoggedIn);
+  const loginState = useRecoilValue(isLoggedIn);
+  const articleMatch = useRouteMatch<{ id: string }>("/devs/:id([0-9a-f]{24})");
   const history = useHistory();
-  const postMatch = useRouteMatch<{ id: string }>("/devs/:id([0-9a-f]{24})");
 
   function calculateTime(end: number, start: number, convertNumber: 60 | 24) {
     let count = 0;
@@ -270,11 +270,11 @@ function Board({ articleLists }: IArticleLists) {
       {articleLists.map((item, idx) => (
         <motion.li
           key={idx}
-          className="board"
+          className="list"
           whileHover={{ x: 20 }}
           onClick={() => articleClicked(item._id)}
         >
-          <Writer isHere={login}>
+          <Writer isHere={loginState}>
             <div className="first-row">
               <img src={item.user.image_url} />
               <div className="online-bg">
@@ -313,7 +313,7 @@ function Board({ articleLists }: IArticleLists) {
         </motion.li>
       ))}
       <AnimatePresence>
-        {postMatch && (
+        {articleMatch && (
           <>
             <Overlay
               initial={{ opacity: 0 }}
@@ -323,7 +323,7 @@ function Board({ articleLists }: IArticleLists) {
             />
             <Post
               post={articleLists.find(
-                (item) => item._id === postMatch?.params.id
+                (item) => item._id === articleMatch?.params.id
               )}
             />
           </>

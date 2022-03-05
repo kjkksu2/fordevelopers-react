@@ -68,9 +68,6 @@ function CommentLists({ postId }: ICommentLists) {
   const [lists, setLists] = useState<IList[]>([]);
   const [time, setTime] = useState("");
 
-  // useQuery는 비동기적으로 작동하기 때문에
-  // 다른 commentLists를 가져오는 동안에 이전에 저장된 commentLists가 출력된다.
-  // 그리고 또 한번 최신의 commentLists가 호출되기 때문에 중복 호출된다.
   useEffect(() => {
     async function fetcher() {
       const response = await fetch(

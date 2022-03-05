@@ -18,17 +18,17 @@ export function enrollment({ title, content }: IPost) {
 // PostComment
 interface IComment {
   postId?: string;
-  commentBox: string;
+  input: string;
 }
 
-export function comment({ postId, commentBox }: IComment) {
+export function comment({ postId, input }: IComment) {
   return fetch(`http://localhost:4000/menus/devs/post/${postId}/comment`, {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ commentBox }),
+    body: JSON.stringify({ input }),
   });
 }
 
