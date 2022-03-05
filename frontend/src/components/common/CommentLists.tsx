@@ -3,18 +3,21 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { corsUrl } from "../../recoil/atom";
 
-const Container = styled.ul``;
+const Container = styled.ul`
+  margin-top: 15px;
+  margin-bottom: 75px;
+`;
 
 const Comment = styled.li`
   display: flex;
-  margin-top: 15px;
+  margin-top: 5px;
 
   .first-column {
     margin-right: 5px;
 
     img {
-      width: 45px;
-      height: 45px;
+      width: 35px;
+      height: 35px;
       border-radius: 5px;
       margin-bottom: 3px;
     }
@@ -27,7 +30,7 @@ const Comment = styled.li`
 
     .nickname {
       text-align: start;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: rgba(0, 0, 0, 0.5);
       margin-bottom: 3px;
@@ -42,16 +45,19 @@ const Comment = styled.li`
       margin-bottom: 3px;
       user-select: text;
       line-height: 25px;
+      font-size: 15px;
     }
 
     .time {
       text-align: end;
+      font-size: 14px;
     }
   }
 `;
 
 interface ICommentLists {
   postId?: string;
+  fakeComment?: IList;
 }
 
 interface IList {
@@ -63,7 +69,7 @@ interface IList {
   };
 }
 
-function CommentLists({ postId }: ICommentLists) {
+function CommentLists({ postId, fakeComment }: ICommentLists) {
   const backendUrl = useRecoilValue(corsUrl);
   const [lists, setLists] = useState<IList[]>([]);
   const [time, setTime] = useState("");
@@ -79,27 +85,12 @@ function CommentLists({ postId }: ICommentLists) {
 
       if (response.status === 200) {
         const json = await response.json();
-
-        json.forEach((item: IList) => {
-          setLists((prev: IList[]) => {
-            return [
-              ...prev,
-              {
-                content: item.content,
-                created_at: item.created_at,
-                user: {
-                  nickname: item.user.nickname,
-                  image_url: item.user.image_url,
-                },
-              },
-            ];
-          });
-        });
+        setLists((lists) => (lists = json));
       }
     }
 
     fetcher();
-  }, [postId]);
+  }, [postId, fakeComment]);
 
   function dateTime(created_at: string) {
     const writtenTime = new Date(created_at);

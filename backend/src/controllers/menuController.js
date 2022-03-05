@@ -92,9 +92,10 @@ export const commentLists = async (req, res) => {
 
     let commentLists = null;
     if (categories === "devs") {
-      commentLists = await Comment.find({ post_id: postId })
-        .populate("user", ["nickname", "image_url"])
-        .sort({ _id: -1 });
+      commentLists = await Comment.find({ post_id: postId }).populate("user", [
+        "nickname",
+        "image_url",
+      ]);
     }
 
     return res.status(200).json(commentLists);

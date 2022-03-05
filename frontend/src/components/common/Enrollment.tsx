@@ -57,6 +57,7 @@ function Enrollment() {
       <Title
         {...register("title", { required: "제목을 입력해주세요." })}
         placeholder="제목"
+        spellCheck={false}
       />
       <span>{errors.title?.message}</span>
 

@@ -1,12 +1,10 @@
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRecoilValue } from "recoil";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { corsUrl } from "../../recoil/atom";
-import CommentLists from "./CommentLists";
 import { useMutation } from "react-query";
+import TextareaAutosize from "react-textarea-autosize";
+import CommentLists from "./CommentLists";
 import { comment } from "../../reactQuery/common";
 
 const Container = styled.section`
@@ -19,37 +17,36 @@ const Container = styled.section`
 
 const Input = styled.article`
   position: fixed;
-  top: 100px;
+  top: 700px;
   transform: translateX(-20px);
-  border-top-right-radius: 10px;
-  width: 400px;
-  padding: 20px;
-  background-color: ${(props) => props.theme.postColors.comment};
-
-  h1 {
-    font-size: 25px;
-    margin-bottom: 20px;
-  }
 
   form {
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    width: 400px;
+    padding: 20px;
+    background-color: ${(props) => props.theme.postColors.comment};
+    border-bottom-right-radius: 10px;
+    display: flex;
 
-    input {
+    textarea {
       border: 1px solid rgba(0, 0, 0, 0.5);
       background-color: transparent;
-      outline: none;
       width: 100%;
-      padding-right: 35px;
       resize: none;
-      padding: 5px;
-      font-size: 17px;
+      max-height: 70px;
+      border-radius: 5px;
+      outline: none;
+      padding: 10px;
+      padding-right: 30px;
+      font-size: 15px;
     }
 
     button {
       position: absolute;
-      height: 100%;
-      top: 0;
-      right: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 27px;
       font-size: 20px;
       background-color: transparent;
       border: none;
@@ -59,27 +56,24 @@ const Input = styled.article`
   }
 `;
 
-const Content = styled.article`
-  padding-top: 100px;
-`;
+const Content = styled.article``;
 
 interface IPostComment {
   postId?: string;
 }
 
-interface IUser {
-  nickname: string;
-  image_url: string;
-}
-
-interface IComment {
+interface IFakeComment {
   content: string;
   created_at: string;
-  user: IUser[];
+  user: {
+    nickname: string;
+    image_url: string;
+  };
 }
 
 function PostComment({ postId }: IPostComment) {
   const [input, setInput] = useState<string>("");
+  const [fakeComment, setFakeComment] = useState<IFakeComment>();
   const mutation = useMutation(comment);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -89,12 +83,12 @@ function PostComment({ postId }: IPostComment) {
 
     if (response.status === 200) {
       const json = await response.json();
-      console.log(json);
+      setFakeComment((prev) => (prev = json));
       setInput("");
     }
   }
 
-  function onInput(event: React.FormEvent<HTMLInputElement>) {
+  function onChange(event: React.FormEvent<HTMLTextAreaElement>) {
     const {
       currentTarget: { value },
     } = event;
@@ -104,18 +98,23 @@ function PostComment({ postId }: IPostComment) {
 
   return (
     <Container>
+      <Content>
+        <CommentLists postId={postId} fakeComment={fakeComment} />
+      </Content>
       <Input>
-        <h1>댓글</h1>
         <form onSubmit={onSubmit}>
-          <input onInput={onInput} placeholder="댓글 쓰기" />
+          <TextareaAutosize
+            onChange={onChange}
+            placeholder="댓글 쓰기"
+            value={input}
+            spellCheck={false}
+            autoFocus
+          />
           <button type="submit">
             <FontAwesomeIcon icon={faPencil} />
           </button>
         </form>
       </Input>
-      <Content>
-        <CommentLists postId={postId} />
-      </Content>
     </Container>
   );
 }

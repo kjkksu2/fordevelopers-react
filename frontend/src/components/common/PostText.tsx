@@ -96,6 +96,7 @@ const Content = styled.article`
 
   p {
     line-height: 30px;
+    font-size: 18px;
   }
 `;
 
