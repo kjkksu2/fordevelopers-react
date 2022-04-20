@@ -71,7 +71,7 @@ const Login = styled(motion.li)`
 
 function Header() {
   const backendUrl = useRecoilValue(corsUrl);
-  const [getLoginBtn, setLoginBtn] = useRecoilState(loginBtn);
+  const [clickLoginBtn, setLoginBtn] = useRecoilState(loginBtn);
   const [loginState, setLoginState] = useRecoilState(isLoggedIn);
   const isHome = useRouteMatch("/");
 
@@ -97,9 +97,6 @@ function Header() {
 
     window.addEventListener("click", (event) => {
       const element = event.target as HTMLElement;
-
-      // console.dir(event.target);
-      // console.dir(element);
 
       if (
         element.innerText === "로그인" ||
@@ -138,7 +135,7 @@ function Header() {
         )}
       </User>
       <AnimatePresence>
-        {getLoginBtn ? <LoginBox layoutId="login" /> : null}
+        {clickLoginBtn ? <LoginBox layoutId="login" /> : null}
       </AnimatePresence>
     </Container>
   );

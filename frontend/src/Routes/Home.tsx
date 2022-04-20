@@ -1,7 +1,5 @@
-import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import Slogan from "../components/Slogan";
-import { loginBtn } from "../recoil/atom";
 
 const Container = styled.main`
   height: 100vh;
@@ -34,10 +32,8 @@ const Section = styled.section`
 `;
 
 function Home() {
-  const setLoginBtn = useSetRecoilState(loginBtn);
-
   return (
-    <Container onClick={() => setLoginBtn(false)}>
+    <Container>
       <Slogan />
       <Section>
         <img className="bgImage" src="/images/hufs1.jpg" />
