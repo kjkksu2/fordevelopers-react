@@ -12,7 +12,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { corsUrl } from "../../recoil/atom";
 
 const Container = styled.section`
   position: relative;
@@ -189,6 +192,7 @@ interface IPostText {
 }
 
 function PostText({ post }: IPostText) {
+  const backendUrl = useRecoilValue(corsUrl);
   const [ellipsis, setEllipsis] = useState<boolean>(false);
 
   function showTime(created_at: string | undefined) {
@@ -217,6 +221,32 @@ function PostText({ post }: IPostText) {
 
   function ellipsisClicked() {
     setEllipsis((prev) => !prev);
+  }
+
+  async function updatePost() {
+    const response = await fetch(
+      `${backendUrl}/menus/devs/post/${post?._id}/update`,
+      {
+        method: "POST",
+      }
+    );
+
+    if (response.status === 200) {
+      window.location.replace(`http://localhost:3000/devs/${post?._id}`);
+    }
+  }
+
+  async function deletePost() {
+    const response = await fetch(
+      `${backendUrl}/menus/devs/post/${post?._id}/delete`,
+      {
+        method: "POST",
+      }
+    );
+
+    if (response.status === 200) {
+      window.location.replace("http://localhost:3000/devs");
+    }
   }
 
   return (
@@ -282,11 +312,11 @@ function PostText({ post }: IPostText) {
           >
             <div className="common">
               <FontAwesomeIcon icon={faPenToSquare} />
-              <span>수정</span>
+              <span onClick={() => updatePost()}>수정</span>
             </div>
             <div className="common">
               <FontAwesomeIcon icon={faTrashCan} />
-              <span>삭제</span>
+              <span onClick={() => deletePost()}>삭제</span>
             </div>
           </EllipsisBox>
         ) : null}

@@ -51,6 +51,40 @@ export const board = async (req, res) => {
 };
 
 /************************************
+             게시물 수정
+ ************************************/
+export const updatePost = async (req, res) => {
+  try {
+    const {
+      params: { postId },
+    } = req;
+
+    await Dev.findByIdAndUpdate(postId);
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+/************************************
+             게시물 삭제
+ ************************************/
+export const deletePost = async (req, res) => {
+  try {
+    const {
+      params: { postId },
+    } = req;
+
+    await Dev.findByIdAndDelete(postId);
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+/************************************
             댓글 등록하기
  ************************************/
 export const comment = async (req, res) => {

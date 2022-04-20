@@ -61,8 +61,8 @@ export const googleLoginFinish = async (req, res) => {
 ********************************/
 export const logout = async (req, res) => {
   // 모든 유저
-  await LoggedInUser.findOneAndDelete({ user: req.session.user });
-  console.log("logout");
+  // await LoggedInUser.findOneAndDelete({ user: req.session.user });
+  // console.log("logout");
 
   // 개인
   req.session.destroy();
@@ -75,6 +75,14 @@ export const logout = async (req, res) => {
 ********************************/
 export const authUser = async (req, res) => {
   return res.json(req.session.user);
+};
+
+/********************************
+      로그인 상태인지 확인
+********************************/
+export const isLoggedIn = async (req, res) => {
+  if (req.session.user) return res.sendStatus(200);
+  else return res.sendStatus(400);
 };
 
 /********************************

@@ -63,11 +63,11 @@ function LoginBox({ layoutId }: ILoginBox) {
 
   async function googleClicked() {
     localStorage.setItem("loginClickedPosition", history.location.pathname);
-    window.location.href = `${backendUrl}/users/google/login`;
+    window.location.replace(`${backendUrl}/users/google/login`);
   }
 
   return (
-    <Container layoutId={layoutId}>
+    <Container className="loginBox" layoutId={layoutId}>
       <Image src="/images/login.jpg" />
       <Text>
         <Title>Welcome</Title>
@@ -78,7 +78,7 @@ function LoginBox({ layoutId }: ILoginBox) {
             <li>2. 로그인이 안되면 구글 계정을 확인해보세요.</li>
           </ul>
         </Alert>
-        <Login onClick={googleClicked}>
+        <Login className="loginBox" onClick={googleClicked}>
           <img src="/images/googleLogin.png" />
         </Login>
       </Text>

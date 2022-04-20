@@ -15,7 +15,6 @@ function Logout() {
 
       if (response.status === 200) {
         setLoginState(false);
-        localStorage.removeItem("user");
       }
     }
   }

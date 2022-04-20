@@ -7,7 +7,7 @@ import { corsUrl, isLoggedIn, loginBtn } from "../../recoil/atom";
 import Logout from "../auth/Logout";
 import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 const Container = styled.header<{ isHome?: boolean }>`
   position: fixed;
@@ -27,9 +27,10 @@ const Container = styled.header<{ isHome?: boolean }>`
   transition: 0.3s ease;
 `;
 
-const Logo = styled.div`
+const Logo = styled.ul`
   font-size: 25px;
   letter-spacing: 1px;
+  justify-self: left;
 
   span {
     display: inline-block;
@@ -75,10 +76,15 @@ function Header() {
   const isHome = useRouteMatch("/");
 
   useEffect(() => {
-    // 개인이 로그인 했는지 확인
-    if (localStorage.getItem("user")) {
-      setLoginState(true);
-    }
+    (async function () {
+      const response = await fetch(`${backendUrl}/users/isLoggedIn`, {
+        credentials: "include",
+      });
+
+      if (response.status === 200) {
+        setLoginState(true);
+      }
+    })();
 
     // 로그인한 모든 유저 가져오기
     // async function fetcher() {
@@ -88,11 +94,23 @@ function Header() {
     // }
 
     // fetcher();
-  }, []);
 
-  function loginBtnClicked() {
-    setLoginBtn(true);
-  }
+    window.addEventListener("click", (event) => {
+      const element = event.target as HTMLElement;
+
+      // console.dir(event.target);
+      // console.dir(element);
+
+      if (
+        element.innerText === "로그인" ||
+        element.offsetParent?.className.includes("loginBox")
+      ) {
+        setLoginBtn(true);
+      } else {
+        setLoginBtn(false);
+      }
+    });
+  }, []);
 
   return (
     <Container isHome={isHome?.isExact}>
@@ -114,7 +132,7 @@ function Header() {
             <UserDelete />
           </>
         ) : (
-          <Login onClick={loginBtnClicked} layoutId="login">
+          <Login className="login" layoutId="login">
             로그인
           </Login>
         )}

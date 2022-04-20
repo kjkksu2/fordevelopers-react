@@ -15,11 +15,11 @@ export const isLoggedIn = atom({
   default: false,
 });
 
-interface IUser {
-  id: string;
-}
+// interface IUser {
+//   id: string;
+// }
 
-export const loggedInUserLists = atom<IUser[]>({
-  key: "loggedInUserLists",
-  default: [],
-});
+// export const loggedInUserLists = atom<IUser[]>({
+//   key: "loggedInUserLists",
+//   default: [],
+// });

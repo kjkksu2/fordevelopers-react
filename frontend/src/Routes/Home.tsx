@@ -36,12 +36,8 @@ const Section = styled.section`
 function Home() {
   const setLoginBtn = useSetRecoilState(loginBtn);
 
-  async function onClick() {
-    setLoginBtn(false);
-  }
-
   return (
-    <Container onClick={onClick}>
+    <Container onClick={() => setLoginBtn(false)}>
       <Slogan />
       <Section>
         <img className="bgImage" src="/images/hufs1.jpg" />

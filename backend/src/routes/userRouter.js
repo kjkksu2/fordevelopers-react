@@ -4,6 +4,7 @@ import {
   googleLoginFinish,
   logout,
   authUser,
+  isLoggedIn,
   loggedInUserLists,
   webClosed,
   webOpen,
@@ -37,6 +38,11 @@ userRouter.get("/google/logout", logout);
         유저 정보 가져오기
 ********************************/
 userRouter.get("/auth", authUser);
+
+/********************************
+      로그인 상태인지 확인
+********************************/
+userRouter.get("/isLoggedIn", isLoggedIn);
 
 /********************************
       로그인한 유저 리스트
