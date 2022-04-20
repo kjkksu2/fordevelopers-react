@@ -12,45 +12,47 @@ function App() {
   const backendUrl = useRecoilValue(corsUrl);
   const user = localStorage.getItem("user");
 
-  useEffect(() => {
-    // 유저가 로그인한 상태일 때
-    if (user) {
-      const { _id: userId } = JSON.parse(user);
+  // useEffect(() => {
+  //   // 유저가 로그인한 상태일 때
+  //   if (user) {
+  //     const { _id: userId } = JSON.parse(user);
 
-      const fetcher = function (on_or_off: string) {
-        fetch(`${backendUrl}/users/web/${on_or_off}`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
-        });
-      };
+  //     const fetcher = function (on_or_off: string) {
+  //       fetch(`${backendUrl}/users/web/${on_or_off}`, {
+  //         method: "POST",
+  //         credentials: "include",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ userId }),
+  //       });
+  //     };
 
-      // offline
-      window.addEventListener("unload", () => {
-        fetcher("close");
-      });
+  //     // offline
+  //     window.addEventListener("unload", () => {
+  //       fetcher("close");
+  //     });
 
-      // online
-      window.addEventListener("load", () => {
-        fetcher("open");
-      });
-    }
-  }, []);
+  //     // online
+  //     window.addEventListener("load", () => {
+  //       fetcher("open");
+  //     });
+  //   }
+  // }, []);
 
   return (
     <Router>
-      <Header />
       <Switch>
         <Route exact path="/">
+          <Header />
           <Home />
         </Route>
         <Route exact path={["/devs", "/devs/:id([0-9a-f]{24})"]}>
+          <Header />
           <Dev />
         </Route>
         <Route exact path="/devs/enrollment">
+          <Header />
           <Enrollment />
         </Route>
         <Route exact path="/login/success" component={LoginSuccess} />

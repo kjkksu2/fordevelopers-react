@@ -62,8 +62,8 @@ function LoginBox({ layoutId }: ILoginBox) {
   const backendUrl = useRecoilValue(corsUrl);
 
   async function googleClicked() {
-    localStorage.setItem("loginClickedPosition", history.location.pathname);
-    window.location.replace(`${backendUrl}/users/google/login`);
+    localStorage.setItem("returningUrl", history.location.pathname);
+    window.location.href = `${backendUrl}/users/google/login`;
   }
 
   return (

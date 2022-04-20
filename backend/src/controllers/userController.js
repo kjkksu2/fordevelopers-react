@@ -44,10 +44,10 @@ export const googleCallback = async (_, __, profile, done) => {
 
 export const googleLoginFinish = async (req, res) => {
   // 모든 유저
-  await LoggedInUser.create({ user: req.user });
-  setTimeout(async () => {
-    await LoggedInUser.findOneAndDelete({ user: req.session.user }); // 하루 뒤 로그아웃
-  }, 24 * 60 * 60 * 1000);
+  // await LoggedInUser.create({ user: req.user });
+  // setTimeout(async () => {
+  //   await LoggedInUser.findOneAndDelete({ user: req.session.user }); // 하루 뒤 로그아웃
+  // }, 24 * 60 * 60 * 1000);
 
   // 개인
   req.session.user = req.user;
@@ -74,7 +74,9 @@ export const logout = async (req, res) => {
         유저 정보 가져오기
 ********************************/
 export const authUser = async (req, res) => {
-  return res.json(req.session.user);
+  if (req.session.user)
+    return res.json({ status: 200, user: req.session.user });
+  else return res.json({ status: 400 });
 };
 
 /********************************

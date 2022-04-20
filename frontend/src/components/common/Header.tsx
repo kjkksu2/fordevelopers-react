@@ -3,7 +3,7 @@ import { Link, useRouteMatch } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import LoginBox from "../auth/LoginBox";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { corsUrl, isLoggedIn, loginBtn } from "../../recoil/atom";
+import { corsUrl, isLoggedIn, loggedInUser, loginBtn } from "../../recoil/atom";
 import Logout from "../auth/Logout";
 import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
@@ -73,16 +73,40 @@ function Header() {
   const backendUrl = useRecoilValue(corsUrl);
   const [clickLoginBtn, setLoginBtn] = useRecoilState(loginBtn);
   const [loginState, setLoginState] = useRecoilState(isLoggedIn);
+  const [userData, setUserData] = useRecoilState(loggedInUser);
   const isHome = useRouteMatch("/");
 
   useEffect(() => {
     (async function () {
-      const response = await fetch(`${backendUrl}/users/isLoggedIn`, {
-        credentials: "include",
-      });
+      const { status, user } = await (
+        await fetch(`${backendUrl}/users/auth`, {
+          credentials: "include",
+        })
+      ).json();
 
-      if (response.status === 200) {
+      if (status === 200) {
         setLoginState(true);
+
+        setUserData({
+          choice: user.choice,
+          comment: user.comment,
+          community: user.community,
+          created_at: user.created_at,
+          department: user.department,
+          email: user.email,
+          github_url: user.github_url,
+          goToSchool: user.goToSchool,
+          image_url: user.image_url,
+          interest: user.interest,
+          introduction: user.introduction,
+          like: user.like,
+          like_clicked_user: user.like_clicked_user,
+          name: user.name,
+          nickname: user.nickname,
+          recruitment: user.recruitment,
+          visit: user.visit,
+          _id: user._id,
+        });
       }
     })();
 
@@ -94,7 +118,9 @@ function Header() {
     // }
 
     // fetcher();
+  }, [loginState]);
 
+  useEffect(() => {
     window.addEventListener("click", (event) => {
       const element = event.target as HTMLElement;
 
