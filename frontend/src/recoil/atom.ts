@@ -15,7 +15,7 @@ export const isLoggedIn = atom<boolean>({
   default: false,
 });
 
-interface IUser {
+export interface IUser {
   choice: [];
   comment: [];
   community: [];

@@ -5,6 +5,8 @@ import {
   commentLists,
   deletePost,
   enrollment,
+  showButton,
+  totalCount,
   updatePost,
 } from "../controllers/menuController";
 
@@ -16,7 +18,7 @@ const menuRouter = express.Router();
 menuRouter.post("/:categories(devs|communities)/enrollment", enrollment);
 
 /************************************
-         게시물 전부 가져오기
+          board lists 주기
  ************************************/
 menuRouter.get("/:categories(devs|communities)/board", board);
 

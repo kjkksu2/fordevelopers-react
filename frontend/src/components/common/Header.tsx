@@ -3,7 +3,13 @@ import { Link, useRouteMatch } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import LoginBox from "../auth/LoginBox";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { corsUrl, isLoggedIn, loggedInUser, loginBtn } from "../../recoil/atom";
+import {
+  corsUrl,
+  isLoggedIn,
+  IUser,
+  loggedInUser,
+  loginBtn,
+} from "../../recoil/atom";
 import Logout from "../auth/Logout";
 import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
@@ -70,11 +76,11 @@ const Login = styled(motion.li)`
 `;
 
 function Header() {
-  const backendUrl = useRecoilValue(corsUrl);
-  const [clickLoginBtn, setLoginBtn] = useRecoilState(loginBtn);
-  const [loginState, setLoginState] = useRecoilState(isLoggedIn);
-  const [userData, setUserData] = useRecoilState(loggedInUser);
-  const isHome = useRouteMatch("/");
+  const backendUrl = useRecoilValue<string>(corsUrl);
+  const [clickLoginBtn, setLoginBtn] = useRecoilState<boolean>(loginBtn);
+  const [loginState, setLoginState] = useRecoilState<boolean>(isLoggedIn);
+  const [userData, setUserData] = useRecoilState<IUser>(loggedInUser);
+  const isHome = useRouteMatch<string>("/");
 
   useEffect(() => {
     (async function () {

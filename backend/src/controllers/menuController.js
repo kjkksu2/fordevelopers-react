@@ -11,8 +11,6 @@ export const enrollment = async (req, res) => {
       params: { categories },
     } = req;
 
-    console.log("hi");
-
     let article = null;
     if (categories === "devs") {
       article = await Dev.create({
@@ -30,7 +28,7 @@ export const enrollment = async (req, res) => {
 };
 
 /************************************
-         게시물 전부 가져오기
+          board lists 주기
  ************************************/
 export const board = async (req, res) => {
   try {
@@ -39,6 +37,7 @@ export const board = async (req, res) => {
     } = req;
 
     let articleLists = null;
+
     if (categories === "devs") {
       articleLists = await Dev.find().populate("user").sort({ _id: -1 });
     }

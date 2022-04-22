@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { Link, useHistory } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { getDevLists } from "../../reactQuery/pages";
+import { corsUrl } from "../../recoil/atom";
 import Board from "../common/Board";
+import ReactPaginate from "react-paginate";
+import Pagination from "../common/Pagination";
 
 const Container = styled.main`
   padding-top: 150px;
@@ -17,6 +20,29 @@ const Container = styled.main`
     text-align: center;
     font-size: 50px;
     color: white;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+
+    .page-item {
+      background-color: #bdc3c7;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: 700;
+
+      &:not(:first-child) {
+        margin-left: 10px;
+      }
+    }
   }
 `;
 
@@ -63,16 +89,35 @@ interface IArticleLists {
 }
 
 function Dev() {
+  const backendUrl = useRecoilValue<string>(corsUrl);
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
-  const { isLoading, data } = useQuery("dev-lists", getDevLists, {
-    refetchOnWindowFocus: false,
-  });
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const articlesPerPage = 1;
+  const maxShownButtons = 10;
+  const numberOfArticles = articleLists.length;
+
+  async function getDevLists() {
+    const response = await fetch(`${backendUrl}/menus/devs/board`, {
+      credentials: "include",
+    });
+    return response.json(); // pending
+  }
+
+  const { isLoading, data } = useQuery<IArticleLists[]>(
+    ["dev-lists"],
+    getDevLists,
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   useEffect(() => {
-    if (data?.status === 200) {
-      setArticleLists(data?.devLists);
-    }
-  }, [data?.devLists]);
+    data && setArticleLists(data);
+  }, [data]);
+
+  const lastIndex = currentPage * articlesPerPage;
+  const firstIndex = lastIndex - articlesPerPage;
+  const currentArticleLists = articleLists.slice(firstIndex, lastIndex);
 
   return (
     <Container>
@@ -85,7 +130,14 @@ function Dev() {
             <span>검색</span>
             <Link to="/devs/enrollment">글쓰기</Link>
           </Text>
-          <Board articleLists={articleLists} />
+          <Board articleLists={currentArticleLists} />
+          <Pagination
+            articlesPerPage={articlesPerPage}
+            maxShownButtons={maxShownButtons}
+            numberOfArticles={numberOfArticles}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </>
       )}
     </Container>
