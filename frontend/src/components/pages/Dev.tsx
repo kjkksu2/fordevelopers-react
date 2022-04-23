@@ -94,7 +94,7 @@ function Dev() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [numberOfArticles, setNumberOfArticles] = useState<number>(-1);
   const { search } = useLocation<string>();
-  const articlesPerPage = 1;
+  const articlesPerPage = 3;
   const maxShownButtons = 10;
 
   async function getDevLists() {
@@ -119,25 +119,6 @@ function Dev() {
       refetchOnWindowFocus: false,
     }
   );
-
-  // let isLoading = false;
-
-  // useEffect(() => {
-  //   (async function () {
-  //     const response = await (
-  //       await fetch(`${backendUrl}/menus/devs/board?page=${currentPage}`, {
-  //         method: "POST",
-  //         credentials: "include",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ articlesPerPage }),
-  //       })
-  //     ).json();
-
-  //     setArticleLists(response);
-  //   })();
-  // }, [currentPage]);
 
   useEffect(() => {
     data && setArticleLists(data);
