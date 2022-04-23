@@ -47,7 +47,7 @@ function App() {
           <Header />
           <Home />
         </Route>
-        <Route exact path={["/devs", "/devs/:id([0-9a-f]{24})"]}>
+        <Route exact path={["/devs/board", "/devs/:id([0-9a-f]{24})"]}>
           <Header />
           <Dev />
         </Route>
@@ -56,8 +56,6 @@ function App() {
           <Enrollment />
         </Route>
         <Route exact path="/login/success" component={LoginSuccess} />
-        <Route path="/categories">{/* <Categories /> */}</Route>
-        <Route path="/api">{/* <Api /> */}</Route>
       </Switch>
     </Router>
   );

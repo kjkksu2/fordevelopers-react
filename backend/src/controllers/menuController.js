@@ -28,18 +28,37 @@ export const enrollment = async (req, res) => {
 };
 
 /************************************
-          board lists 주기
+          board total pages
+ ************************************/
+export const totalPages = async (req, res) => {
+  try {
+    const numberOfArticles = await Dev.count();
+
+    return res.status(200).json(numberOfArticles);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+/************************************
+            board lists
  ************************************/
 export const board = async (req, res) => {
   try {
     const {
       params: { categories },
+      body: { articlesPerPage },
+      query: { page: currentPage },
     } = req;
 
     let articleLists = null;
 
     if (categories === "devs") {
-      articleLists = await Dev.find().populate("user").sort({ _id: -1 });
+      articleLists = await Dev.find()
+        .populate("user")
+        .sort({ _id: -1 })
+        .skip((Number(currentPage) - 1) * articlesPerPage)
+        .limit(articlesPerPage);
     }
 
     return res.status(200).json(articleLists);

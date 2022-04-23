@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import queryString from "query-string";
 import { getDevLists } from "../../reactQuery/pages";
 import { corsUrl } from "../../recoil/atom";
 import Board from "../common/Board";
-import ReactPaginate from "react-paginate";
 import Pagination from "../common/Pagination";
 
 const Container = styled.main`
@@ -92,18 +92,27 @@ function Dev() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [numberOfArticles, setNumberOfArticles] = useState<number>(-1);
+  const { search } = useLocation<string>();
   const articlesPerPage = 1;
   const maxShownButtons = 10;
-  const numberOfArticles = articleLists.length;
 
   async function getDevLists() {
-    const response = await fetch(`${backendUrl}/menus/devs/board`, {
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${backendUrl}/menus/devs/board?page=${currentPage}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ articlesPerPage }),
+      }
+    );
     return response.json(); // pending
   }
 
-  const { isLoading, data } = useQuery<IArticleLists[]>(
+  const { isLoading, data, refetch } = useQuery<IArticleLists[]>(
     ["dev-lists"],
     getDevLists,
     {
@@ -111,13 +120,48 @@ function Dev() {
     }
   );
 
+  // let isLoading = false;
+
+  // useEffect(() => {
+  //   (async function () {
+  //     const response = await (
+  //       await fetch(`${backendUrl}/menus/devs/board?page=${currentPage}`, {
+  //         method: "POST",
+  //         credentials: "include",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ articlesPerPage }),
+  //       })
+  //     ).json();
+
+  //     setArticleLists(response);
+  //   })();
+  // }, [currentPage]);
+
   useEffect(() => {
     data && setArticleLists(data);
   }, [data]);
 
-  const lastIndex = currentPage * articlesPerPage;
-  const firstIndex = lastIndex - articlesPerPage;
-  const currentArticleLists = articleLists.slice(firstIndex, lastIndex);
+  useEffect(() => {
+    refetch();
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(() => Number(search.split("=")[1]));
+  }, [search]);
+
+  useEffect(() => {
+    (async function () {
+      const response = await (
+        await fetch(`${backendUrl}/menus/devs/board/total-page`, {
+          credentials: "include",
+        })
+      ).json();
+
+      setNumberOfArticles(response);
+    })();
+  }, []);
 
   return (
     <Container>
@@ -130,7 +174,7 @@ function Dev() {
             <span>검색</span>
             <Link to="/devs/enrollment">글쓰기</Link>
           </Text>
-          <Board articleLists={currentArticleLists} />
+          <Board articleLists={articleLists} />
           <Pagination
             articlesPerPage={articlesPerPage}
             maxShownButtons={maxShownButtons}

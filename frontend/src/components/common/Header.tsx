@@ -150,7 +150,7 @@ function Header() {
         </Link>
       </Logo>
       <Menu>
-        <Link to="/devs">Dev</Link>
+        <Link to="/devs/board?page=1">Dev</Link>
         <Link to="/boards">게시판</Link>
       </Menu>
       <User>

@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link, useHistory, useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { corsUrl } from "../../recoil/atom";
 
 const Nav = styled.nav`
   margin-bottom: 50px;
@@ -11,15 +14,6 @@ const Ul = styled.ul`
 `;
 
 const Li = styled.li`
-  background-color: #bdc3c7;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
   font-size: 20px;
   font-weight: 700;
 
@@ -27,8 +21,21 @@ const Li = styled.li`
     margin-left: 10px;
   }
 
-  &.active {
-    background-color: #7f8c8d;
+  a,
+  span {
+    background-color: #bdc3c7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 20px;
+    cursor: pointer;
+
+    &.active {
+      background-color: #7f8c8d;
+    }
   }
 `;
 
@@ -47,6 +54,7 @@ function Pagination({
   currentPage,
   setCurrentPage,
 }: IPagination) {
+  const history = useHistory();
   const paginatedButtons: number[] = [];
 
   let multiple = 0;
@@ -68,28 +76,33 @@ function Pagination({
   function prevClick() {
     currentPage === 1
       ? alert("첫 페이지입니다.")
-      : setCurrentPage((page) => page - 1);
+      : history.push(`/devs/board?page=${currentPage - 1}`);
   }
   function nextClick() {
     currentPage === totalBtn
       ? alert("마지막 페이지입니다.")
-      : setCurrentPage((page) => page + 1);
+      : history.push(`/devs/board?page=${currentPage + 1}`);
   }
 
   return (
     <Nav>
       <Ul>
-        <Li onClick={prevClick}>이전</Li>
+        <Li onClick={prevClick}>
+          <span>이전</span>
+        </Li>
         {paginatedButtons.map((item, idx) => (
-          <Li
-            key={idx}
-            className={item === currentPage ? "active" : ""}
-            onClick={() => setCurrentPage(item)}
-          >
-            {item}
+          <Li key={idx}>
+            <Link
+              to={`/devs/board?page=${item}`}
+              className={item === currentPage ? "active" : ""}
+            >
+              {item}
+            </Link>
           </Li>
         ))}
-        <Li onClick={nextClick}>다음</Li>
+        <Li onClick={nextClick}>
+          <span>다음</span>
+        </Li>
       </Ul>
     </Nav>
   );

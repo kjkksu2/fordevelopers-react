@@ -7,6 +7,7 @@ import {
   enrollment,
   showButton,
   totalCount,
+  totalPages,
   updatePost,
 } from "../controllers/menuController";
 
@@ -18,9 +19,14 @@ const menuRouter = express.Router();
 menuRouter.post("/:categories(devs|communities)/enrollment", enrollment);
 
 /************************************
-          board lists 주기
+          board total pages
  ************************************/
-menuRouter.get("/:categories(devs|communities)/board", board);
+menuRouter.get("/:categories(devs|communities)/board/total-page", totalPages);
+
+/************************************
+            board lists
+ ************************************/
+menuRouter.route("/:categories(devs|communities)/board").get(board).post(board);
 
 /************************************
              게시물 수정
