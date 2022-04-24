@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { corsUrl } from "../../recoil/atom";
+import { corsUrl, IPagination, pagination } from "../../recoil/atom";
 
 const Nav = styled.nav`
   margin-bottom: 50px;
@@ -39,22 +39,10 @@ const Li = styled.li`
   }
 `;
 
-interface IPagination {
-  articlesPerPage: number;
-  maxShownButtons: number;
-  numberOfArticles: number;
-  currentPage: number;
-  setCurrentPage: (page: React.SetStateAction<number>) => void;
-}
-
-function Pagination({
-  articlesPerPage,
-  maxShownButtons,
-  numberOfArticles,
-  currentPage,
-  setCurrentPage,
-}: IPagination) {
+function Pagination() {
   const history = useHistory();
+  const { articlesPerPage, maxShownButtons, numberOfArticles, currentPage } =
+    useRecoilValue<IPagination>(pagination);
   const paginatedButtons: number[] = [];
 
   let multiple = 0;
@@ -76,12 +64,12 @@ function Pagination({
   function prevClick() {
     currentPage === 1
       ? alert("첫 페이지입니다.")
-      : history.push(`/devs/board?page=${currentPage - 1}`);
+      : history.push(`/board?category=dev&page=${currentPage - 1}`);
   }
   function nextClick() {
     currentPage === totalBtn
       ? alert("마지막 페이지입니다.")
-      : history.push(`/devs/board?page=${currentPage + 1}`);
+      : history.push(`/board?category=dev&page=${currentPage + 1}`);
   }
 
   return (
@@ -93,7 +81,7 @@ function Pagination({
         {paginatedButtons.map((item, idx) => (
           <Li key={idx}>
             <Link
-              to={`/devs/board?page=${item}`}
+              to={`/board?category=dev&page=${item}`}
               className={item === currentPage ? "active" : ""}
             >
               {item}

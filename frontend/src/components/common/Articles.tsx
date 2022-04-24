@@ -176,9 +176,11 @@ interface IArticleLists {
   articleLists: IArticleListsElements[];
 }
 
-function Board({ articleLists }: IArticleLists) {
+function Articles({ articleLists }: IArticleLists) {
   const loginState = useRecoilValue(isLoggedIn);
-  const articleMatch = useRouteMatch<{ id: string }>("/devs/:id([0-9a-f]{24})");
+  const articleMatch = useRouteMatch<{ id: string }>(
+    "/board/:id([0-9a-f]{24})"
+  );
   const history = useHistory();
 
   function calculateTime(end: number, start: number, convertNumber: 60 | 24) {
@@ -258,11 +260,11 @@ function Board({ articleLists }: IArticleLists) {
   }
 
   function articleClicked(id: string) {
-    history.push(`/devs/${id}`);
+    history.push(`/board/${id}`);
   }
 
   function overlayClicked() {
-    history.push("/devs");
+    history.push("/board?category=dev&page=1");
   }
 
   return (
@@ -333,4 +335,4 @@ function Board({ articleLists }: IArticleLists) {
   );
 }
 
-export default Board;
+export default Articles;

@@ -9,29 +9,29 @@ import {
   totalCount,
   totalPages,
   updatePost,
-} from "../controllers/menuController";
+} from "../controllers/playController";
 
-const menuRouter = express.Router();
+const playRouter = express.Router();
 
 /************************************
             게시물 등록하기
  ************************************/
-menuRouter.post("/:categories(devs|communities)/enrollment", enrollment);
+playRouter.post("/:categories(devs|communities)/enrollment", enrollment);
 
 /************************************
           board total pages
  ************************************/
-menuRouter.get("/:categories(devs|communities)/board/total-page", totalPages);
+playRouter.get("/board/total-page", totalPages);
 
 /************************************
             board lists
  ************************************/
-menuRouter.route("/:categories(devs|communities)/board").get(board).post(board);
+playRouter.route("/board").get(board).post(board);
 
 /************************************
              게시물 수정
  ************************************/
-menuRouter.post(
+playRouter.post(
   "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/update",
   updatePost
 );
@@ -39,7 +39,7 @@ menuRouter.post(
 /************************************
              게시물 삭제
  ************************************/
-menuRouter.post(
+playRouter.post(
   "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/delete",
   deletePost
 );
@@ -47,7 +47,7 @@ menuRouter.post(
 /************************************
             댓글 등록하기
  ************************************/
-menuRouter.post(
+playRouter.post(
   "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/comment",
   comment
 );
@@ -55,9 +55,9 @@ menuRouter.post(
 /************************************
           댓글 전부 가져오기
  ************************************/
-menuRouter.get(
+playRouter.get(
   "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/commentLists",
   commentLists
 );
 
-export default menuRouter;
+export default playRouter;

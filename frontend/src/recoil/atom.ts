@@ -60,6 +60,23 @@ export const loggedInUser = atom<IUser>({
   },
 });
 
+export interface IPagination {
+  articlesPerPage: number;
+  maxShownButtons: number;
+  numberOfArticles: number;
+  currentPage: number;
+}
+
+export const pagination = atom<IPagination>({
+  key: "pagination",
+  default: {
+    articlesPerPage: 1,
+    maxShownButtons: 10,
+    numberOfArticles: -1,
+    currentPage: 1,
+  },
+});
+
 // export const loggedInUserLists = atom<IUser[]>({
 //   key: "loggedInUserLists",
 //   default: [],

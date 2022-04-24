@@ -32,7 +32,14 @@ export const enrollment = async (req, res) => {
  ************************************/
 export const totalPages = async (req, res) => {
   try {
-    const numberOfArticles = await Dev.count();
+    const {
+      query: { category },
+    } = req;
+
+    let numberOfArticles = null;
+    if (category === "dev") {
+      numberOfArticles = await Dev.count();
+    }
 
     return res.status(200).json(numberOfArticles);
   } catch (error) {
@@ -46,14 +53,15 @@ export const totalPages = async (req, res) => {
 export const board = async (req, res) => {
   try {
     const {
-      params: { categories },
       body: { articlesPerPage },
-      query: { page: currentPage },
+      query: { category, page: currentPage },
     } = req;
 
     let articleLists = null;
 
-    if (categories === "devs") {
+    console.log(category, currentPage);
+
+    if (category === "dev") {
       articleLists = await Dev.find()
         .populate("user")
         .sort({ _id: -1 })

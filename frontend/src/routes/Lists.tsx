@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import queryString from "query-string";
-import { getDevLists } from "../../reactQuery/pages";
-import { corsUrl } from "../../recoil/atom";
-import Board from "../common/Board";
-import Pagination from "../common/Pagination";
+import { getDevLists } from "../reactQuery/pages";
+import { corsUrl, IPagination, pagination } from "../recoil/atom";
+import Articles from "../components/common/Articles";
+import Pagination from "../components/common/Pagination";
 
 const Container = styled.main`
   padding-top: 150px;
@@ -88,18 +87,19 @@ interface IArticleLists {
   comment: [];
 }
 
-function Dev() {
+function Lists() {
   const backendUrl = useRecoilValue<string>(corsUrl);
+  const [{ articlesPerPage, currentPage }, setPaginate] =
+    useRecoilState<IPagination>(pagination);
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [numberOfArticles, setNumberOfArticles] = useState<number>(-1);
   const { search } = useLocation<string>();
-  const articlesPerPage = 3;
-  const maxShownButtons = 10;
 
-  async function getDevLists() {
+  const regex = /category=[a-z]+/g;
+  const category = search.match(regex)?.join("").split("=")[1];
+
+  async function getArticles() {
     const response = await fetch(
-      `${backendUrl}/menus/devs/board?page=${currentPage}`,
+      `${backendUrl}/play/board?category=${category}&page=${currentPage}`,
       {
         method: "POST",
         credentials: "include",
@@ -113,8 +113,8 @@ function Dev() {
   }
 
   const { isLoading, data, refetch } = useQuery<IArticleLists[]>(
-    ["dev-lists"],
-    getDevLists,
+    ["articles"],
+    getArticles,
     {
       refetchOnWindowFocus: false,
     }
@@ -129,18 +129,28 @@ function Dev() {
   }, [currentPage]);
 
   useEffect(() => {
-    setCurrentPage(() => Number(search.split("=")[1]));
+    const regex = /page=[0-9]+/g;
+    const currentPage = Number(search.match(regex)?.join("").split("=")[1]);
+
+    search &&
+      setPaginate((prev) => ({
+        ...prev,
+        currentPage,
+      }));
   }, [search]);
 
   useEffect(() => {
     (async function () {
       const response = await (
-        await fetch(`${backendUrl}/menus/devs/board/total-page`, {
-          credentials: "include",
-        })
+        await fetch(
+          `${backendUrl}/play/board/total-page?category=${category}`,
+          {
+            credentials: "include",
+          }
+        )
       ).json();
 
-      setNumberOfArticles(response);
+      setPaginate((prev) => ({ ...prev, numberOfArticles: response }));
     })();
   }, []);
 
@@ -151,22 +161,19 @@ function Dev() {
       ) : (
         <>
           <Text>
-            <span>Dev</span>
+            <span>
+              {`${category?.slice(0, 1).toUpperCase()}` +
+                `${category?.slice(1)}`}
+            </span>
             <span>검색</span>
             <Link to="/devs/enrollment">글쓰기</Link>
           </Text>
-          <Board articleLists={articleLists} />
-          <Pagination
-            articlesPerPage={articlesPerPage}
-            maxShownButtons={maxShownButtons}
-            numberOfArticles={numberOfArticles}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
+          <Articles articleLists={articleLists} />
+          <Pagination />
         </>
       )}
     </Container>
   );
 }
 
-export default Dev;
+export default Lists;

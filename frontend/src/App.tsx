@@ -1,17 +1,11 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Dev from "./components/pages/Dev";
 import Header from "./components/common/Header";
 import LoginSuccess from "./components/auth/LoginSuccess";
 import Home from "./routes/Home";
 import Enrollment from "./components/common/Enrollment";
-import { useRecoilValue } from "recoil";
-import { corsUrl } from "./recoil/atom";
-import { useEffect } from "react";
+import Lists from "./routes/Lists";
 
 function App() {
-  const backendUrl = useRecoilValue(corsUrl);
-  const user = localStorage.getItem("user");
-
   // useEffect(() => {
   //   // 유저가 로그인한 상태일 때
   //   if (user) {
@@ -47,9 +41,9 @@ function App() {
           <Header />
           <Home />
         </Route>
-        <Route exact path={["/devs/board", "/devs/:id([0-9a-f]{24})"]}>
+        <Route exact path={["/board", "/board/:id([0-9a-f]{24})"]}>
           <Header />
-          <Dev />
+          <Lists />
         </Route>
         <Route exact path="/devs/enrollment">
           <Header />
