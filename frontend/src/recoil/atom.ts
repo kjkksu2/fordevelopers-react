@@ -77,6 +77,24 @@ export const pagination = atom<IPagination>({
   },
 });
 
+export interface IArticleLists {
+  _id: string;
+  title: string;
+  content: string;
+  like: number;
+  choice: number;
+  views: number;
+  user: {
+    nickname: string;
+    image_url: string;
+    department: string;
+    goToSchool: string;
+    like: number;
+  };
+  created_at: string;
+  comment: [];
+}
+
 // export const loggedInUserLists = atom<IUser[]>({
 //   key: "loggedInUserLists",
 //   default: [],

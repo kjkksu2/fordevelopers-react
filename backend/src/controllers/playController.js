@@ -28,27 +28,6 @@ export const enrollment = async (req, res) => {
 };
 
 /************************************
-          board total pages
- ************************************/
-export const totalPages = async (req, res) => {
-  try {
-    const {
-      query: { category },
-    } = req;
-
-    let numberOfArticles = null;
-    if (category === "dev") {
-      numberOfArticles = await Dev.count();
-    }
-
-    return res.status(200).json(numberOfArticles);
-  } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
-  }
-};
-
-/************************************
             board lists
  ************************************/
 export const board = async (req, res) => {
@@ -59,6 +38,7 @@ export const board = async (req, res) => {
     } = req;
 
     let articleLists = null;
+    let numberOfArticles = null;
 
     if (category === "dev") {
       articleLists = await Dev.find()
@@ -66,9 +46,11 @@ export const board = async (req, res) => {
         .sort({ _id: -1 })
         .skip((Number(currentPage) - 1) * articlesPerPage)
         .limit(articlesPerPage);
+
+      numberOfArticles = await Dev.count();
     }
 
-    return res.status(200).json(articleLists);
+    return res.status(200).json({ articleLists, numberOfArticles });
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
@@ -78,10 +60,32 @@ export const board = async (req, res) => {
 /************************************
               search
  ************************************/
-export const search = (req, res) => {
+export const search = async (req, res) => {
   try {
-    const { query, body } = req;
-    console.log(query, body);
+    const {
+      query: { keyword, category, page: currentPage },
+      body: { articlesPerPage },
+    } = req;
+
+    const regex = new RegExp(keyword, "i");
+    let articleLists = null;
+    let numberOfArticles = null;
+
+    if (category === "dev") {
+      articleLists = await Dev.find({
+        $or: [{ title: regex }, { content: regex }],
+      })
+        .populate("user")
+        .sort({ _id: -1 })
+        .skip((Number(currentPage) - 1) * articlesPerPage)
+        .limit(articlesPerPage);
+
+      numberOfArticles = await Dev.count({
+        $or: [{ title: regex }, { content: regex }],
+      });
+    }
+
+    return res.status(200).json({ articleLists, numberOfArticles });
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);

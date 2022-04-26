@@ -6,9 +6,6 @@ import {
   deletePost,
   enrollment,
   search,
-  showButton,
-  totalCount,
-  totalPages,
   updatePost,
 } from "../controllers/playController";
 
@@ -18,11 +15,6 @@ const playRouter = express.Router();
             게시물 등록하기
  ************************************/
 playRouter.post("/:categories(devs|communities)/enrollment", enrollment);
-
-/************************************
-          board total pages
- ************************************/
-playRouter.get("/board/total-page", totalPages);
 
 /************************************
             board lists

@@ -3,7 +3,12 @@ import { useQuery } from "react-query";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { corsUrl, IPagination, pagination } from "../recoil/atom";
+import {
+  corsUrl,
+  IArticleLists,
+  IPagination,
+  pagination,
+} from "../recoil/atom";
 import Articles from "../components/common/Articles";
 import Pagination from "../components/common/Pagination";
 
@@ -85,137 +90,67 @@ const Text = styled.section`
   }
 `;
 
-interface IArticleLists {
-  _id: string;
-  title: string;
-  content: string;
-  like: number;
-  choice: number;
-  views: number;
-  user: {
-    nickname: string;
-    image_url: string;
-    department: string;
-    goToSchool: string;
-    like: number;
-  };
-  created_at: string;
-  comment: [];
-}
-
 function Lists() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [{ articlesPerPage, currentPage }, setPaginate] =
     useRecoilState<IPagination>(pagination);
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { search: queryString } = useLocation<string>();
   const history = useHistory();
 
-  const regex = /category=[a-z]+/g;
-  const category = queryString.match(regex)?.join("").split("=")[1];
-
-  async function getArticles() {
-    const response = await fetch(
-      `${backendUrl}/play/board?category=${category}&page=${currentPage}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ articlesPerPage }),
-      }
-    );
-    return response.json(); // pending
-  }
-
-  // const { isLoading, data, refetch } = useQuery<IArticleLists[]>(
-  //   ["articles"],
-  //   getArticles,
-  //   {
-  //     refetchOnWindowFocus: false,
-  //   }
-  // );
-
-  // console.log(queryString);
-
-  // useEffect(() => {
-  //   data && setArticleLists(data);
-  // }, [data]);
-
-  // useEffect(() => {
-  //   refetch();
-  //   console.log(currentPage);
-  // }, [currentPage]);
+  const keywordRegex = /keyword=[a-zA-Z0-9]+/g;
+  const categoryRegex = /category=[a-z]+/g;
+  const keyword = queryString.match(keywordRegex)?.join("").split("=")[1];
+  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
 
   useEffect(() => {
+    let fetchUrl = null;
+
+    if (queryString.includes("keyword")) {
+      fetchUrl = `${backendUrl}/play/board/search?keyword=${keyword}&category=${category}&page=${currentPage}`;
+    } else {
+      fetchUrl = `${backendUrl}/play/board?category=${category}&page=${currentPage}`;
+    }
+
     (async function () {
-      const response = await (
-        await fetch(
-          `${backendUrl}/play/board?category=${category}&page=${currentPage}`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ articlesPerPage }),
-          }
-        )
+      const { articleLists, numberOfArticles } = await (
+        await fetch(fetchUrl, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ articlesPerPage }),
+        })
       ).json();
 
       setIsLoading(false);
-      setArticleLists(response);
+      setArticleLists(articleLists);
+      setPaginate((prev) => ({ ...prev, numberOfArticles }));
     })();
-  }, [currentPage]);
+  }, [currentPage, keyword]);
 
   useEffect(() => {
     const regex = /page=[0-9]+/g;
-    const currentPage = Number(
-      queryString.match(regex)?.join("").split("=")[1]
-    );
+    const urlPage = Number(queryString.match(regex)?.join("").split("=")[1]);
 
-    queryString &&
+    currentPage !== urlPage &&
       setPaginate((prev) => ({
         ...prev,
-        currentPage,
+        currentPage: urlPage,
       }));
   }, [queryString]);
 
-  useEffect(() => {
-    (async function () {
-      const response = await (
-        await fetch(
-          `${backendUrl}/play/board/total-page?category=${category}`,
-          {
-            credentials: "include",
-          }
-        )
-      ).json();
-
-      setPaginate((prev) => ({ ...prev, numberOfArticles: response }));
-    })();
-  }, []);
-
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    fetch(`${backendUrl}/play/board/search?category=${category}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ searchValue }),
-    });
-
-    setSearchValue("");
-    setPaginate((prev) => ({ ...prev, currentPage: 1 }));
     history.push(
-      `/board/search?keyword=${searchValue}&category=${category}&page=1`
+      `/board/search?keyword=${inputValue}&category=${category}&page=1`
     );
+
+    setInputValue("");
   }
 
   function onInput(event: React.FormEvent<HTMLInputElement>) {
@@ -223,7 +158,7 @@ function Lists() {
       currentTarget: { value },
     } = event;
 
-    setSearchValue(value);
+    setInputValue(value);
   }
 
   return (
@@ -243,7 +178,7 @@ function Lists() {
                 type="text"
                 placeholder="Search for..."
                 spellCheck={false}
-                value={searchValue}
+                value={inputValue}
                 onInput={onInput}
               />
             </form>

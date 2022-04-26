@@ -44,6 +44,9 @@ function Pagination() {
   const { articlesPerPage, maxShownButtons, numberOfArticles, currentPage } =
     useRecoilValue<IPagination>(pagination);
   const paginatedButtons: number[] = [];
+  const { search: queryString } = useLocation<string>();
+
+  const paginateUrl = queryString.split("&page")[0];
 
   let multiple = 0;
   while (maxShownButtons * multiple < currentPage) {
@@ -64,12 +67,12 @@ function Pagination() {
   function prevClick() {
     currentPage === 1
       ? alert("첫 페이지입니다.")
-      : history.push(`/board?category=dev&page=${currentPage - 1}`);
+      : history.push(`/board${paginateUrl}&page=${currentPage - 1}`);
   }
   function nextClick() {
     currentPage === totalBtn
       ? alert("마지막 페이지입니다.")
-      : history.push(`/board?category=dev&page=${currentPage + 1}`);
+      : history.push(`/board${paginateUrl}&page=${currentPage + 1}`);
   }
 
   return (
@@ -81,7 +84,7 @@ function Pagination() {
         {paginatedButtons.map((item, idx) => (
           <Li key={idx}>
             <Link
-              to={`/board?category=dev&page=${item}`}
+              to={`/board${paginateUrl}&page=${item}`}
               className={item === currentPage ? "active" : ""}
             >
               {item}
