@@ -4,8 +4,8 @@ interface IPost {
   content: string;
 }
 
-export function enrollment({ title, content }: IPost) {
-  return fetch("http://localhost:4000/menus/devs/enrollment", {
+export function write({ title, content }: IPost) {
+  return fetch("http://localhost:4000/board/write", {
     method: "POST",
     credentials: "include",
     headers: {

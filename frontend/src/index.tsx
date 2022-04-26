@@ -14,11 +14,14 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     user-select: none;
     font-family: "Poppins", sans-serif;
+  }
+
+  html{
+    background-color: teal;
 
     &::-webkit-scrollbar {
-      display: none;
+      width: 0px;
     }
-    scrollbar-width: none;
   }
 
   a{

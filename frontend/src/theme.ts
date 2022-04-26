@@ -10,6 +10,11 @@ const theme: DefaultTheme = {
     online: "#27ae60",
     offline: "#e74c3c",
   },
+  scrollColors: {
+    main: "#ced6e0",
+    lighter: "#dfe4ea",
+    darker: "#a4b0be",
+  },
   postColors: {
     content: "#0288d1",
     comment: "#6ec6ff",

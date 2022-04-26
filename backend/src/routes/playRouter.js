@@ -4,7 +4,7 @@ import {
   comment,
   commentLists,
   deletePost,
-  enrollment,
+  write,
   search,
   updatePost,
 } from "../controllers/playController";
@@ -12,19 +12,19 @@ import {
 const playRouter = express.Router();
 
 /************************************
-            게시물 등록하기
- ************************************/
-playRouter.post("/:categories(devs|communities)/enrollment", enrollment);
-
-/************************************
-            board lists
+        전체 게시물 불러오기
  ************************************/
 playRouter.post("/board", board);
 
 /************************************
-              search
+             검색하기
  ************************************/
 playRouter.post("/board/search", search);
+
+/************************************
+              글쓰기
+ ************************************/
+playRouter.post("/board/write", write);
 
 /************************************
              게시물 수정

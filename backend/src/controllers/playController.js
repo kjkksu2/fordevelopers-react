@@ -2,33 +2,7 @@ import Dev from "../models/Dev";
 import Comment from "../models/Comment";
 
 /************************************
-            게시물 등록하기
- ************************************/
-export const enrollment = async (req, res) => {
-  try {
-    const {
-      body: { title, content },
-      params: { categories },
-    } = req;
-
-    let article = null;
-    if (categories === "devs") {
-      article = await Dev.create({
-        title,
-        content,
-        user: req.session.user,
-      });
-    }
-
-    return res.sendStatus(200);
-  } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
-  }
-};
-
-/************************************
-            board lists
+        전체 게시물 불러오기
  ************************************/
 export const board = async (req, res) => {
   try {
@@ -58,7 +32,7 @@ export const board = async (req, res) => {
 };
 
 /************************************
-              search
+              검색하기
  ************************************/
 export const search = async (req, res) => {
   try {
@@ -86,6 +60,32 @@ export const search = async (req, res) => {
     }
 
     return res.status(200).json({ articleLists, numberOfArticles });
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+/************************************
+               글쓰기
+ ************************************/
+export const write = async (req, res) => {
+  try {
+    const {
+      body: { title, content },
+      query: { category },
+    } = req;
+
+    let article = null;
+    if (category === "dev") {
+      article = await Dev.create({
+        title,
+        content,
+        user: req.session.user,
+      });
+    }
+
+    return res.sendStatus(200);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);

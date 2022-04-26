@@ -4,7 +4,6 @@ import Slogan from "../components/Slogan";
 const Container = styled.main`
   height: 100vh;
   display: flex;
-  background-color: ${(props) => props.theme.bgColors.main};
 `;
 
 const Section = styled.section`

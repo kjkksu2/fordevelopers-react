@@ -7,6 +7,7 @@ import {
   corsUrl,
   IArticleLists,
   IPagination,
+  isLoggedIn,
   pagination,
 } from "../recoil/atom";
 import Articles from "../components/common/Articles";
@@ -97,8 +98,9 @@ function Lists() {
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { search: queryString } = useLocation<string>();
+  const { pathname, search: queryString } = useLocation<string>();
   const history = useHistory();
+  const loginState = useRecoilValue<boolean>(isLoggedIn);
 
   const keywordRegex = /keyword=[a-zA-Z0-9]+/g;
   const categoryRegex = /category=[a-z]+/g;
@@ -183,7 +185,9 @@ function Lists() {
               />
             </form>
             <div>
-              <Link to="/devs/enrollment">글쓰기</Link>
+              {loginState && (
+                <Link to={`/board/write?category=${category}`}>글쓰기</Link>
+              )}
             </div>
           </Text>
           <Articles articleLists={articleLists} />

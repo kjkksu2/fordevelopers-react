@@ -13,6 +13,11 @@ declare module "styled-components" {
       online: string;
       offline: string;
     };
+    scrollColors: {
+      main: string;
+      lighter: string;
+      darker: string;
+    };
     postColors: {
       content: string;
       comment: string;
