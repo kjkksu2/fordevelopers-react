@@ -3,7 +3,6 @@ import { useQuery } from "react-query";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { getDevLists } from "../reactQuery/pages";
 import { corsUrl, IPagination, pagination } from "../recoil/atom";
 import Articles from "../components/common/Articles";
 import Pagination from "../components/common/Pagination";
@@ -47,25 +46,42 @@ const Container = styled.main`
 
 const Text = styled.section`
   padding: 0 300px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 0.5fr;
   align-items: center;
   margin-bottom: 15px;
+  color: white;
 
   span {
     display: inline-block;
-    color: white;
-
     font-size: 50px;
     border-radius: 5px;
   }
 
-  a {
-    display: inline-block;
-    background-color: ${(props) => props.theme.bgColors.lighter};
-    color: white;
+  div {
+    text-align: end;
+
+    a {
+      display: inline-block;
+      background-color: ${(props) => props.theme.bgColors.lighter};
+      padding: 10px;
+      border-radius: 5px;
+    }
+  }
+
+  .searchBar {
+    width: 100%;
     padding: 10px;
-    border-radius: 5px;
+    font-size: 20px;
+    outline: none;
+    border: 2px solid white;
+    border-radius: 30px;
+    background-color: transparent;
+    color: white;
+
+    &::placeholder {
+      color: #bdc3c7;
+    }
   }
 `;
 
@@ -92,10 +108,13 @@ function Lists() {
   const [{ articlesPerPage, currentPage }, setPaginate] =
     useRecoilState<IPagination>(pagination);
   const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
-  const { search } = useLocation<string>();
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { search: queryString } = useLocation<string>();
+  const history = useHistory();
 
   const regex = /category=[a-z]+/g;
-  const category = search.match(regex)?.join("").split("=")[1];
+  const category = queryString.match(regex)?.join("").split("=")[1];
 
   async function getArticles() {
     const response = await fetch(
@@ -112,32 +131,58 @@ function Lists() {
     return response.json(); // pending
   }
 
-  const { isLoading, data, refetch } = useQuery<IArticleLists[]>(
-    ["articles"],
-    getArticles,
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+  // const { isLoading, data, refetch } = useQuery<IArticleLists[]>(
+  //   ["articles"],
+  //   getArticles,
+  //   {
+  //     refetchOnWindowFocus: false,
+  //   }
+  // );
+
+  // console.log(queryString);
+
+  // useEffect(() => {
+  //   data && setArticleLists(data);
+  // }, [data]);
+
+  // useEffect(() => {
+  //   refetch();
+  //   console.log(currentPage);
+  // }, [currentPage]);
 
   useEffect(() => {
-    data && setArticleLists(data);
-  }, [data]);
+    (async function () {
+      const response = await (
+        await fetch(
+          `${backendUrl}/play/board?category=${category}&page=${currentPage}`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ articlesPerPage }),
+          }
+        )
+      ).json();
 
-  useEffect(() => {
-    refetch();
+      setIsLoading(false);
+      setArticleLists(response);
+    })();
   }, [currentPage]);
 
   useEffect(() => {
     const regex = /page=[0-9]+/g;
-    const currentPage = Number(search.match(regex)?.join("").split("=")[1]);
+    const currentPage = Number(
+      queryString.match(regex)?.join("").split("=")[1]
+    );
 
-    search &&
+    queryString &&
       setPaginate((prev) => ({
         ...prev,
         currentPage,
       }));
-  }, [search]);
+  }, [queryString]);
 
   useEffect(() => {
     (async function () {
@@ -154,6 +199,33 @@ function Lists() {
     })();
   }, []);
 
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    fetch(`${backendUrl}/play/board/search?category=${category}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ searchValue }),
+    });
+
+    setSearchValue("");
+    setPaginate((prev) => ({ ...prev, currentPage: 1 }));
+    history.push(
+      `/board/search?keyword=${searchValue}&category=${category}&page=1`
+    );
+  }
+
+  function onInput(event: React.FormEvent<HTMLInputElement>) {
+    const {
+      currentTarget: { value },
+    } = event;
+
+    setSearchValue(value);
+  }
+
   return (
     <Container>
       {isLoading ? (
@@ -165,8 +237,19 @@ function Lists() {
               {`${category?.slice(0, 1).toUpperCase()}` +
                 `${category?.slice(1)}`}
             </span>
-            <span>검색</span>
-            <Link to="/devs/enrollment">글쓰기</Link>
+            <form onSubmit={onSubmit}>
+              <input
+                className="searchBar"
+                type="text"
+                placeholder="Search for..."
+                spellCheck={false}
+                value={searchValue}
+                onInput={onInput}
+              />
+            </form>
+            <div>
+              <Link to="/devs/enrollment">글쓰기</Link>
+            </div>
           </Text>
           <Articles articleLists={articleLists} />
           <Pagination />

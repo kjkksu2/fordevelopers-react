@@ -4,13 +4,12 @@ import PostComment from "./PostComment";
 import PostText from "./PostText";
 
 const Container = styled(motion.main)`
-  position: fixed;
   top: 100px;
   left: 0;
   right: 0;
   margin: 0 auto;
-  width: 900px;
-  height: 600px;
+  width: 100%;
+  height: 100%;
   display: flex;
   border-radius: 10px;
   overflow: hidden;

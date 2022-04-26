@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { corsUrl } from "../../recoil/atom";
@@ -58,11 +58,11 @@ interface ILoginBox {
 }
 
 function LoginBox({ layoutId }: ILoginBox) {
-  const history = useHistory();
+  const { pathname, search } = useLocation<string>();
   const backendUrl = useRecoilValue(corsUrl);
 
   async function googleClicked() {
-    localStorage.setItem("returningUrl", history.location.pathname);
+    localStorage.setItem("returningUrl", pathname + search);
     window.location.href = `${backendUrl}/users/google/login`;
   }
 

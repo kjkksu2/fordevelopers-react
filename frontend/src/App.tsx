@@ -4,6 +4,8 @@ import LoginSuccess from "./components/auth/LoginSuccess";
 import Home from "./routes/Home";
 import Enrollment from "./components/common/Enrollment";
 import Lists from "./routes/Lists";
+import Board from "./routes/Board";
+import Post from "./components/common/Post";
 
 function App() {
   // useEffect(() => {
@@ -41,9 +43,13 @@ function App() {
           <Header />
           <Home />
         </Route>
-        <Route exact path={["/board", "/board/:id([0-9a-f]{24})"]}>
+        <Route exact path="/board">
           <Header />
           <Lists />
+        </Route>
+        <Route exact path="/board/:id([0-9a-f]{24})">
+          <Header />
+          <Post />
         </Route>
         <Route exact path="/devs/enrollment">
           <Header />

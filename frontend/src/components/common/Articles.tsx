@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -314,7 +314,8 @@ function Articles({ articleLists }: IArticleLists) {
           </Info>
         </motion.li>
       ))}
-      <AnimatePresence>
+
+      {/* <AnimatePresence>
         {articleMatch && (
           <>
             <Overlay
@@ -330,7 +331,7 @@ function Articles({ articleLists }: IArticleLists) {
             />
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </Container>
   );
 }

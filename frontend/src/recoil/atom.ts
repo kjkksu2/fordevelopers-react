@@ -70,7 +70,7 @@ export interface IPagination {
 export const pagination = atom<IPagination>({
   key: "pagination",
   default: {
-    articlesPerPage: 1,
+    articlesPerPage: 4,
     maxShownButtons: 10,
     numberOfArticles: -1,
     currentPage: 1,

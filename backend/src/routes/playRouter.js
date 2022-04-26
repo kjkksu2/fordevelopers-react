@@ -5,6 +5,7 @@ import {
   commentLists,
   deletePost,
   enrollment,
+  search,
   showButton,
   totalCount,
   totalPages,
@@ -26,7 +27,12 @@ playRouter.get("/board/total-page", totalPages);
 /************************************
             board lists
  ************************************/
-playRouter.route("/board").get(board).post(board);
+playRouter.post("/board", board);
+
+/************************************
+              search
+ ************************************/
+playRouter.post("/board/search", search);
 
 /************************************
              게시물 수정

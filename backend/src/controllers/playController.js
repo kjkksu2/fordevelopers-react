@@ -47,6 +47,7 @@ export const totalPages = async (req, res) => {
     return res.sendStatus(400);
   }
 };
+
 /************************************
             board lists
  ************************************/
@@ -59,8 +60,6 @@ export const board = async (req, res) => {
 
     let articleLists = null;
 
-    console.log(category, currentPage);
-
     if (category === "dev") {
       articleLists = await Dev.find()
         .populate("user")
@@ -70,6 +69,19 @@ export const board = async (req, res) => {
     }
 
     return res.status(200).json(articleLists);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+/************************************
+              search
+ ************************************/
+export const search = (req, res) => {
+  try {
+    const { query, body } = req;
+    console.log(query, body);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
