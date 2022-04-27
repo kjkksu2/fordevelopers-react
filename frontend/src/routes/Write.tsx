@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { useLocation } from "react-router-dom";
@@ -15,7 +15,7 @@ const Form = styled.form`
   align-items: center;
 `;
 
-const Text = styled.section`
+const Box = styled.section`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -38,8 +38,15 @@ const Text = styled.section`
     }
 
     #photo {
-      display: none;
+      /* display: none; */
     }
+  }
+
+  .second-row {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    padding: 15px;
   }
 `;
 
@@ -48,21 +55,20 @@ const Title = styled.input`
   font-size: 20px;
   padding: 10px;
   outline: none;
+  border: none;
   border-radius: 10px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
 `;
 
 const Content = styled.textarea`
   width: 100%;
   height: 500px;
   font-size: 20px;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
-  background-color: white;
   outline: none;
   border: none;
   overflow-y: auto;
   resize: none;
+  padding-right: 10px;
 
   &::-webkit-scrollbar {
     width: 13px;
@@ -83,11 +89,17 @@ const Content = styled.textarea`
 
 const Image = styled.ul`
   background-color: white;
-  display: flex;
+  display: none;
+  border-top: 2px solid #e3e3e3;
+  padding-top: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
 
   li {
+    cursor: pointer;
     width: 100px;
     height: 100px;
+    border: 1px solid #e3e3e3;
 
     .previewImage {
       width: 100%;
@@ -115,7 +127,9 @@ function Write() {
   } = useForm<IWrite>();
   const backendUrl = useRecoilValue(corsUrl);
   const { search: queryString } = useLocation<string>();
+  const [fileArray, setFileArray] = useState<File[]>([]);
   const ulRef = useRef<HTMLUListElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   async function onValid({ title, content }: IWrite) {
     const response = await fetch(
@@ -135,37 +149,85 @@ function Write() {
     }
   }
 
-  function onInput(event: React.FormEvent<HTMLInputElement>) {
-    const target = event.target as HTMLInputElement;
-    const file = (target.files as FileList)[0];
+  function removeImage(event: Event) {
+    if (window.confirm("삭제하시겠습니까?")) {
+      const target = event.target as HTMLImageElement;
+      const parentElement = target.parentElement as Element;
+      const src = target.src as string;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.addEventListener("loadend", (event) => {
-      const target = event.target as FileReader;
-      const result = target.result as string;
+      const current = inputRef.current as HTMLInputElement;
+      const files = current.files as FileList;
 
-      const li = document.createElement("li");
-      const img = document.createElement("img");
-      img.src = result;
-      img.className = "previewImage";
-      li.appendChild(img);
+      for (const i of Array.from(files)) {
+        const reader = new FileReader();
+        reader.readAsDataURL(i);
+        reader.addEventListener("loadend", (event) => {
+          const target = event.target as FileReader;
+          const result = target.result as string;
+        });
+      }
 
-      ulRef.current?.appendChild(li);
-    });
+      parentElement.remove();
+    }
   }
 
+  function onInput(event: React.FormEvent<HTMLInputElement>) {
+    const target = event.target as HTMLInputElement;
+    const files = target.files as FileList;
+
+    for (const i of Array.from(files)) {
+      const reader = new FileReader();
+      reader.readAsDataURL(i);
+      reader.addEventListener("loadend", (event) => {
+        const target = event.target as FileReader;
+        const result = target.result as string;
+
+        const li = document.createElement("li");
+        const img = document.createElement("img");
+        img.setAttribute("src", result);
+        img.setAttribute("class", "previewImage");
+        img.onclick = (event) => removeImage(event);
+        li.appendChild(img);
+
+        const current = ulRef.current as HTMLUListElement;
+        let style = current.style as CSSStyleDeclaration;
+        current.appendChild(li);
+        style.setProperty("display", "flex");
+      });
+    }
+  }
+
+  // useEffect(() => {
+  //   const current = inputRef.current as HTMLInputElement;
+  //   let files = current.files as FileList;
+
+  //   const dt = new DataTransfer();
+
+  //   // dt.items.add(fileArray[0]);
+  //   console.log(fileArray);
+
+  //   // console.log(files);
+  //   // console.log(fileArray);
+  // }, [fileArray]);
+
   return (
-    <Form onSubmit={handleSubmit(onValid)}>
-      <Text>
+    <Form
+      onSubmit={handleSubmit(onValid)}
+      method="POST"
+      encType="multipart/form-data"
+    >
+      <Box>
         <div className="first-row">
           <label htmlFor="photo">사진 첨부</label>
-          <input id="photo" type="file" accept="image/*" onInput={onInput} />
-          <Title
-            {...register("title", { required: "제목을 입력해주세요." })}
-            placeholder="제목"
-            spellCheck={false}
+          <input
+            id="photo"
+            type="file"
+            accept="image/*"
+            onInput={onInput}
+            multiple
+            ref={inputRef}
           />
+          <Title placeholder="제목" spellCheck={false} />
           {/* <span>{errors.title?.message}</span> */}
         </div>
         <div className="second-row">
@@ -179,10 +241,9 @@ function Write() {
             contentEditable={true}
           /> */}
           {/* <span>{errors.content?.message}</span> */}
+          <Image ref={ulRef}></Image>
         </div>
-      </Text>
-      <Image ref={ulRef}></Image>
-      {/* second-row와 하나로 묶어야 함 */}
+      </Box>
       <Submit type="submit" value="등록하기" />
     </Form>
   );

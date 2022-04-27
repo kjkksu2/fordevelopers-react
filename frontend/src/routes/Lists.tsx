@@ -191,7 +191,7 @@ function Lists() {
             </div>
           </Text>
           <Articles articleLists={articleLists} />
-          <Pagination />
+          {articleLists.length > 0 && <Pagination />}
         </>
       )}
     </Container>

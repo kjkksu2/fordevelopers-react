@@ -70,6 +70,7 @@ function Pagination() {
       : history.push(`/board${paginateUrl}&page=${currentPage - 1}`);
   }
   function nextClick() {
+    console.log(totalBtn);
     currentPage === totalBtn
       ? alert("마지막 페이지입니다.")
       : history.push(`/board${paginateUrl}&page=${currentPage + 1}`);
