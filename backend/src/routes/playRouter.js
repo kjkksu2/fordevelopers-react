@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   board,
   comment,
@@ -8,6 +9,8 @@ import {
   search,
   updatePost,
 } from "../controllers/playController";
+
+const uploadImages = multer({ dest: "uploads/images" });
 
 const playRouter = express.Router();
 
@@ -24,7 +27,11 @@ playRouter.post("/board/search", search);
 /************************************
               글쓰기
  ************************************/
-playRouter.post("/board/write", write);
+playRouter.post(
+  "/board/write",
+  uploadImages.fields([{ name: "imageFile" }]),
+  write
+);
 
 /************************************
              게시물 수정

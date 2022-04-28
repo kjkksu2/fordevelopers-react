@@ -9,6 +9,12 @@ const devSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  images: [
+    {
+      type: String,
+      default: "",
+    },
+  ],
   like: {
     type: Number,
     default: 0,

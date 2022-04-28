@@ -1,10 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import React, { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { write } from "../reactQuery/common";
 import { corsUrl } from "../recoil/atom";
 
 const Form = styled.form`
@@ -23,8 +20,8 @@ const Box = styled.section`
   .first-row {
     display: grid;
     grid-template-columns: 0.15fr 0.85fr;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: 20px;
+    margin-bottom: 20px;
 
     label {
       cursor: pointer;
@@ -38,7 +35,7 @@ const Box = styled.section`
     }
 
     #photo {
-      /* display: none; */
+      display: none;
     }
   }
 
@@ -47,6 +44,7 @@ const Box = styled.section`
     border-radius: 15px;
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
     padding: 15px;
+    margin-bottom: 20px;
   }
 `;
 
@@ -108,66 +106,62 @@ const Image = styled.ul`
   }
 `;
 
-const Submit = styled.input`
-  width: 500px;
-  padding: 10px;
-  cursor: pointer;
-`;
+const Options = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
 
-interface IWrite {
-  title: string;
-  content: string;
-}
+  button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 20px;
+    color: white;
 
-function Write() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IWrite>();
-  const backendUrl = useRecoilValue(corsUrl);
-  const { search: queryString } = useLocation<string>();
-  const [fileArray, setFileArray] = useState<File[]>([]);
-  const ulRef = useRef<HTMLUListElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  async function onValid({ title, content }: IWrite) {
-    const response = await fetch(
-      `${backendUrl}/play/board/write${queryString}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title, content }),
-      }
-    );
-
-    if (response.status === 200) {
-      window.location.href = `/board${queryString}&page=1`;
+    &[type="submit"] {
+      background-color: ${(props) => props.theme.bgColors.main};
+    }
+    &[type="button"] {
+      background-color: ${(props) => props.theme.scrollColors.darker};
     }
   }
+`;
 
-  function removeImage(event: Event) {
+function Write() {
+  const backendUrl = useRecoilValue(corsUrl);
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const { search: queryString } = useLocation<string>();
+  const formRef = useRef<HTMLFormElement>(null);
+  const ulRef = useRef<HTMLUListElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  let imageFileList: File[] = [];
+
+  function removeImage(event: MouseEvent) {
     if (window.confirm("삭제하시겠습니까?")) {
-      const target = event.target as HTMLImageElement;
-      const parentElement = target.parentElement as Element;
-      const src = target.src as string;
+      const clickedTarget = event.target as HTMLImageElement;
+      const clickedImage = clickedTarget.parentElement as Element;
+
+      const inputList = (event.composedPath()[2] as Element).children;
+      const target = event.composedPath()[1];
+      const targetIndex = Array.from(inputList).findIndex(
+        (element) => element === target
+      );
 
       const current = inputRef.current as HTMLInputElement;
-      const files = current.files as FileList;
 
-      for (const i of Array.from(files)) {
-        const reader = new FileReader();
-        reader.readAsDataURL(i);
-        reader.addEventListener("loadend", (event) => {
-          const target = event.target as FileReader;
-          const result = target.result as string;
-        });
+      for (let i = 0; i < imageFileList.length; i++) {
+        i === targetIndex && imageFileList.splice(i, 1);
       }
 
-      parentElement.remove();
+      const dt = new DataTransfer();
+      imageFileList.forEach((element) => dt.items.add(element));
+      current.files = dt.files;
+
+      clickedImage.remove(); // remove를 먼저하면 inputList가 바뀐다.
     }
   }
 
@@ -175,9 +169,16 @@ function Write() {
     const target = event.target as HTMLInputElement;
     const files = target.files as FileList;
 
-    for (const i of Array.from(files)) {
+    const current = inputRef.current as HTMLInputElement;
+
+    const dt = new DataTransfer();
+    Array.from(files).forEach((element) => imageFileList.push(element));
+    imageFileList.forEach((element) => dt.items.add(element));
+    current.files = dt.files;
+
+    for (const file of Array.from(files)) {
       const reader = new FileReader();
-      reader.readAsDataURL(i);
+      reader.readAsDataURL(file);
       reader.addEventListener("loadend", (event) => {
         const target = event.target as FileReader;
         const result = target.result as string;
@@ -197,29 +198,48 @@ function Write() {
     }
   }
 
-  // useEffect(() => {
-  //   const current = inputRef.current as HTMLInputElement;
-  //   let files = current.files as FileList;
+  function changeTitle(event: React.FormEvent<HTMLInputElement>) {
+    const {
+      currentTarget: { value },
+    } = event;
 
-  //   const dt = new DataTransfer();
+    setTitle(value);
+  }
+  function changeContent(event: React.FormEvent<HTMLTextAreaElement>) {
+    const {
+      currentTarget: { value },
+    } = event;
 
-  //   // dt.items.add(fileArray[0]);
-  //   console.log(fileArray);
+    setContent(value);
+  }
 
-  //   // console.log(files);
-  //   // console.log(fileArray);
-  // }, [fileArray]);
+  function cancelButton() {
+    window.location.href = `/board${queryString}&page=1`;
+  }
+
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (title === "") return alert("제목을 적어주세요.");
+
+    if (content === "") return alert("내용을 적어주세요.");
+
+    formRef.current?.submit();
+  }
 
   return (
     <Form
-      onSubmit={handleSubmit(onValid)}
+      onSubmit={onSubmit}
+      action={`${backendUrl}/play/board/write${queryString}`}
       method="POST"
       encType="multipart/form-data"
+      ref={formRef}
     >
       <Box>
         <div className="first-row">
           <label htmlFor="photo">사진 첨부</label>
           <input
+            name="imageFile"
             id="photo"
             type="file"
             accept="image/*"
@@ -227,24 +247,31 @@ function Write() {
             multiple
             ref={inputRef}
           />
-          <Title placeholder="제목" spellCheck={false} />
-          {/* <span>{errors.title?.message}</span> */}
+          <Title
+            name="title"
+            placeholder="제목"
+            spellCheck={false}
+            onChange={changeTitle}
+            value={title}
+          />
         </div>
         <div className="second-row">
-          <Content spellCheck={false} placeholder="내용을 입력하세요." />
-          {/* <Content
-            {...register("content", {
-              minLength: { value: 10, message: "10자 이상 적어주세요." },
-            })}
-            placeholder="내용을 입력하세요."
+          <Content
+            name="content"
             spellCheck={false}
-            contentEditable={true}
-          /> */}
-          {/* <span>{errors.content?.message}</span> */}
+            placeholder="내용을 입력하세요."
+            onChange={changeContent}
+            value={content}
+          />
           <Image ref={ulRef}></Image>
         </div>
       </Box>
-      <Submit type="submit" value="등록하기" />
+      <Options>
+        <button type="button" onClick={cancelButton}>
+          취소
+        </button>
+        <button type="submit">등록</button>
+      </Options>
     </Form>
   );
 }

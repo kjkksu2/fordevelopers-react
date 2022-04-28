@@ -74,6 +74,7 @@ export const write = async (req, res) => {
     const {
       body: { title, content },
       query: { category },
+      files: { imageFile },
     } = req;
 
     let article = null;
@@ -83,9 +84,14 @@ export const write = async (req, res) => {
         content,
         user: req.session.user,
       });
+
+      imageFile?.forEach((file) => article.images.push(`/${file.path}`));
+      await article.save();
     }
 
-    return res.sendStatus(200);
+    return res.redirect(
+      `http://localhost:3000/board?category=${category}&page=1`
+    );
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
