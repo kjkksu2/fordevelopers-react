@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import {
+  articleLists,
   corsUrl,
-  IArticleLists,
+  IArticle,
   IPagination,
   isLoggedIn,
   pagination,
@@ -95,14 +95,14 @@ function Lists() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [{ articlesPerPage, currentPage }, setPaginate] =
     useRecoilState<IPagination>(pagination);
-  const [articleLists, setArticleLists] = useState<IArticleLists[]>([]);
+  const [lists, setLists] = useRecoilState<IArticle[]>(articleLists);
   const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { pathname, search: queryString } = useLocation<string>();
   const history = useHistory();
   const loginState = useRecoilValue<boolean>(isLoggedIn);
 
-  const keywordRegex = /keyword=[a-zA-Z0-9]+/g;
+  const keywordRegex = /keyword=[\w|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+/g;
   const categoryRegex = /category=[a-z]+/g;
   const keyword = queryString.match(keywordRegex)?.join("").split("=")[1];
   const category = queryString.match(categoryRegex)?.join("").split("=")[1];
@@ -129,7 +129,7 @@ function Lists() {
       ).json();
 
       setIsLoading(false);
-      setArticleLists(articleLists);
+      setLists(articleLists);
       setPaginate((prev) => ({ ...prev, numberOfArticles }));
     })();
   }, [currentPage, keyword]);
@@ -190,8 +190,8 @@ function Lists() {
               )}
             </div>
           </Text>
-          <Articles articleLists={articleLists} />
-          {articleLists.length > 0 && <Pagination />}
+          <Articles />
+          {lists.length > 0 && <Pagination />}
         </>
       )}
     </Container>

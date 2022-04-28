@@ -15,26 +15,20 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { corsUrl } from "../../recoil/atom";
+import { article, corsUrl } from "../../recoil/atom";
 
 const Container = styled.section`
-  position: relative;
-  width: 500px;
-  background-color: ${(props) => props.theme.postColors.content};
+  width: 700px;
+  margin: 0 auto;
+  background-color: ${(props) => props.theme.bgColors.lighter};
   padding: 20px;
-  overflow-y: scroll;
+  border-radius: 15px;
 `;
 
 const User = styled.article`
-  position: fixed;
-  top: 100px;
-  transform: translateX(-20px);
-  border-top-left-radius: 10px;
-  width: 500px;
-  padding: 20px;
   display: flex;
   justify-content: space-between;
-  background-color: ${(props) => props.theme.postColors.content};
+  margin-bottom: 15px;
 `;
 
 const Writer = styled.div`
@@ -64,37 +58,15 @@ const Writer = styled.div`
   }
 `;
 
-const Options = styled.div`
-  .expand {
-    display: inline-block;
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: 0.3s ease;
-    border-radius: 5px;
-
-    .expand-icon {
-      font-size: 13px;
-      margin-right: 8px;
-      transform: translateY(-2px);
-    }
-
-    &:hover {
-      background-color: rgba(189, 195, 199, 0.5);
-    }
-  }
-`;
-
 const Content = styled.article`
-  padding-top: 85px;
-
   h1,
   p {
     user-select: text;
   }
 
   h1 {
-    margin-bottom: 20px;
-    font-size: 30px;
+    margin-bottom: 15px;
+    font-size: 35px;
   }
 
   p {
@@ -103,49 +75,55 @@ const Content = styled.article`
   }
 `;
 
-const RestOptions = styled(motion.div)`
-  position: fixed;
-  top: 100px;
-  transform: translate(-80px, 20px);
+const Options = styled(motion.div)`
   display: flex;
-  flex-direction: column;
-  font-size: 30px;
-  z-index: -1;
+  font-size: 20px;
+  position: relative;
+  bottom: 0;
+  left: 0;
+  margin-top: 20px;
 
   .icon {
-    background-color: #f5f6fa;
-    padding: 7px 100px 7px 15px;
-    border-radius: 30px;
-    cursor: pointer;
+    margin-right: 17px;
 
     span {
-      margin-left: 20px;
+      margin-left: 5px;
     }
   }
 
-  .ellipsis-icon {
-    color: white;
-    margin-bottom: 50px;
-    transform: translateX(40px);
-    display: flex;
-    cursor: pointer;
+  .like {
+    color: #e74c3c;
+
+    svg {
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
   }
 
-  .like-icon {
-    color: #e74c3c;
-    padding: 5px 100px 7px 17px;
-    margin-bottom: 20px;
+  .comment {
+    color: #5f27cd;
+
+    svg {
+      transform: translateY(1px);
+    }
   }
-  .comment-icon {
-    color: #9c88ff;
-    padding: 5px 100px 7px 17px;
-    margin-bottom: 20px;
-  }
-  .choice-icon {
+
+  .choice {
     color: #f1c40f;
-    margin-bottom: 20px;
+
+    svg {
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
   }
-  .view-icon {
+
+  .view {
     color: #2ecc71;
   }
 `;
@@ -173,27 +151,9 @@ const EllipsisBox = styled(motion.div)`
   }
 `;
 
-interface IPostText {
-  post?: {
-    _id: string;
-    title: string;
-    content: string;
-    like: number;
-    choice: number;
-    views: number;
-    created_at: string;
-    user: {
-      nickname: string;
-      image_url: string;
-      like: number;
-    };
-    comment: [];
-  };
-}
-
-function PostText({ post }: IPostText) {
+function PostText() {
   const backendUrl = useRecoilValue(corsUrl);
-  const [ellipsis, setEllipsis] = useState<boolean>(false);
+  const post = useRecoilValue(article);
 
   function showTime(created_at: string | undefined) {
     const writtenTime = created_at && new Date(created_at);
@@ -217,10 +177,6 @@ function PostText({ post }: IPostText) {
       .padStart(2, "0");
 
     return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  }
-
-  function ellipsisClicked() {
-    setEllipsis((prev) => !prev);
   }
 
   async function updatePost() {
@@ -265,42 +221,30 @@ function PostText({ post }: IPostText) {
             <div className="time">{showTime(post?.created_at)}</div>
           </div>
         </Writer>
-        <Options>
-          <div className="expand">
-            <FontAwesomeIcon
-              icon={faUpRightAndDownLeftFromCenter}
-              className="expand-icon"
-            />
-            <span>크게</span>
-          </div>
-        </Options>
       </User>
       <Content>
-        <h1>{post?.title}</h1>
-        <p>{post?.content}</p>
+        <h1>{post.title}</h1>
+        <p>{post.content}</p>
       </Content>
-      <RestOptions>
-        <motion.div className="ellipsis-icon" onClick={ellipsisClicked}>
-          <FontAwesomeIcon icon={faEllipsisV} />
-        </motion.div>
-        <motion.div whileHover={{ x: -50 }} className="like-icon icon">
+      <Options>
+        <div className="icon like">
           <FontAwesomeIcon icon={faThumbsUp} />
-          <span>{post?.like}</span>
-        </motion.div>
-        <motion.div whileHover={{ x: -50 }} className="comment-icon icon">
+          <span>{post.like}</span>
+        </div>
+        <div className="icon comment">
           <FontAwesomeIcon icon={faMessage} />
-          <span>{post?.comment.length}</span>
-        </motion.div>
-        <motion.div whileHover={{ x: -50 }} className="choice-icon icon">
+          <span>{post.comment.length}</span>
+        </div>
+        <div className="icon choice">
           <FontAwesomeIcon icon={faScroll} />
-          <span>{post?.choice}</span>
-        </motion.div>
-        <motion.div whileHover={{ x: -50 }} className="view-icon icon">
+          <span>{post.choice}</span>
+        </div>
+        <div className="icon view">
           <FontAwesomeIcon icon={faEye} />
-          <span>{post?.views}</span>
-        </motion.div>
-      </RestOptions>
-      <AnimatePresence>
+          <span>{post.views}</span>
+        </div>
+      </Options>
+      {/* <AnimatePresence>
         {ellipsis ? (
           <EllipsisBox
             initial={{ scale: 1.1, opacity: 0, x: -230, y: 10 }}
@@ -320,7 +264,7 @@ function PostText({ post }: IPostText) {
             </div>
           </EllipsisBox>
         ) : null}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </Container>
   );
 }

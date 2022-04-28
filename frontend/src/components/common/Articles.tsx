@@ -1,11 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
-import { isLoggedIn } from "../../recoil/atom";
-import Post from "./Post";
+import { article, articleLists, IArticle, isLoggedIn } from "../../recoil/atom";
 
 const Container = styled.ul`
   width: 100%;
@@ -145,39 +144,10 @@ const Info = styled.div`
   }
 `;
 
-const Overlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: black;
-`;
-
-interface IArticleListsElements {
-  _id: string;
-  title: string;
-  content: string;
-  like: number;
-  choice: number;
-  views: number;
-  user: {
-    nickname: string;
-    image_url: string;
-    department: string;
-    goToSchool: string;
-    like: number;
-  };
-  created_at: string;
-  comment: [];
-}
-
-interface IArticleLists {
-  articleLists: IArticleListsElements[];
-}
-
-function Articles({ articleLists }: IArticleLists) {
+function Articles() {
   const loginState = useRecoilValue(isLoggedIn);
+  const lists = useRecoilValue<IArticle[]>(articleLists);
+  const setArticle = useSetRecoilState<IArticle>(article);
   const articleMatch = useRouteMatch<{ id: string }>(
     "/board/:id([0-9a-f]{24})"
   );
@@ -259,79 +229,54 @@ function Articles({ articleLists }: IArticleLists) {
     }
   }
 
-  function articleClicked(id: string) {
-    history.push(`/board/${id}`);
-  }
-
-  function overlayClicked() {
-    history.push("/board?category=dev&page=1");
+  function onClick(post: IArticle) {
+    setArticle(post);
   }
 
   return (
     <Container>
-      {articleLists.map((item, idx) => (
-        <motion.li
-          key={idx}
-          className="list"
-          whileHover={{ x: 20 }}
-          onClick={() => articleClicked(item._id)}
-        >
-          <Writer isHere={loginState}>
-            <div className="first-row">
-              <img src={item.user.image_url} />
-              <div className="online-bg">
-                <div className="online"></div>
+      {lists.map((item, idx) => (
+        <Link to={`/board/${item._id}`} key={idx} onClick={() => onClick(item)}>
+          <motion.li className="list" whileHover={{ x: 20 }}>
+            <Writer isHere={loginState}>
+              <div className="first-row">
+                <img src={item.user.image_url} />
+                <div className="online-bg">
+                  <div className="online"></div>
+                </div>
               </div>
-            </div>
-            <div className="second-row">
-              <span>
-                {item.user.nickname}({item.user.goToSchool})
-              </span>
-              <span>{item.user.department}</span>
-            </div>
-          </Writer>
-          <Content>
-            <h1>{item.title}</h1>
-            <p>
-              {item.content.length < 80
-                ? item.content
-                : item.content.slice(0, 80) + "..."}
-            </p>
-          </Content>
-          <Info>
-            <div className="comments common">
-              <FontAwesomeIcon icon={faMessage} className="message-icon" />
-              <span>{item.comment.length}</span>
-            </div>
-            <div className="views common">
-              <FontAwesomeIcon icon={faEye} className="eye-icon" />
-              <span>{item.views}</span>
-            </div>
-            <div className="created_at common">
-              <FontAwesomeIcon icon={faClock} className="clock-icon" />
-              <span>{showTime(item.created_at)}</span>
-            </div>
-          </Info>
-        </motion.li>
+              <div className="second-row">
+                <span>
+                  {item.user.nickname}({item.user.goToSchool})
+                </span>
+                <span>{item.user.department}</span>
+              </div>
+            </Writer>
+            <Content>
+              <h1>{item.title}</h1>
+              <p>
+                {item.content.length < 80
+                  ? item.content
+                  : item.content.slice(0, 80) + "..."}
+              </p>
+            </Content>
+            <Info>
+              <div className="comments common">
+                <FontAwesomeIcon icon={faMessage} className="message-icon" />
+                <span>{item.comment.length}</span>
+              </div>
+              <div className="views common">
+                <FontAwesomeIcon icon={faEye} className="eye-icon" />
+                <span>{item.views}</span>
+              </div>
+              <div className="created_at common">
+                <FontAwesomeIcon icon={faClock} className="clock-icon" />
+                <span>{showTime(item.created_at)}</span>
+              </div>
+            </Info>
+          </motion.li>
+        </Link>
       ))}
-
-      {/* <AnimatePresence>
-        {articleMatch && (
-          <>
-            <Overlay
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              onClick={overlayClicked}
-            />
-            <Post
-              post={articleLists.find(
-                (item) => item._id === articleMatch?.params.id
-              )}
-            />
-          </>
-        )}
-      </AnimatePresence> */}
     </Container>
   );
 }

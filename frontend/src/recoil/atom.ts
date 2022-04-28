@@ -38,26 +38,7 @@ export interface IUser {
 
 export const loggedInUser = atom<IUser>({
   key: "loggedInUser",
-  default: {
-    choice: [],
-    comment: [],
-    community: [],
-    created_at: "",
-    department: "",
-    email: "",
-    github_url: "",
-    goToSchool: "",
-    image_url: "",
-    interest: [],
-    introduction: "",
-    like: 0,
-    like_clicked_user: [],
-    name: "",
-    nickname: "",
-    recruitment: [],
-    visit: 0,
-    _id: "",
-  },
+  default: <IUser>{},
 });
 
 export interface IPagination {
@@ -77,7 +58,7 @@ export const pagination = atom<IPagination>({
   },
 });
 
-export interface IArticleLists {
+export interface IArticle {
   _id: string;
   title: string;
   content: string;
@@ -94,6 +75,16 @@ export interface IArticleLists {
   created_at: string;
   comment: [];
 }
+
+export const articleLists = atom<IArticle[]>({
+  key: "articleLists",
+  default: [],
+});
+
+export const article = atom<IArticle>({
+  key: "post",
+  default: <IArticle>{},
+});
 
 // export const loggedInUserLists = atom<IUser[]>({
 //   key: "loggedInUserLists",

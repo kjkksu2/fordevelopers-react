@@ -6,27 +6,18 @@ import { useMutation } from "react-query";
 import TextareaAutosize from "react-textarea-autosize";
 import CommentLists from "./CommentLists";
 import { comment } from "../../reactQuery/common";
+import { useRecoilValue } from "recoil";
+import { article, IArticle } from "../../recoil/atom";
 
 const Container = styled.section`
-  width: 400px;
-  text-align: center;
-  background-color: ${(props) => props.theme.postColors.comment};
   padding: 20px;
-  overflow-y: scroll;
 `;
 
 const Input = styled.article`
-  position: fixed;
-  top: 700px;
-  transform: translateX(-20px);
-
   form {
-    position: absolute;
-    bottom: 0;
-    width: 400px;
     padding: 20px;
+    width: 100%;
     background-color: ${(props) => props.theme.postColors.comment};
-    border-bottom-right-radius: 10px;
     display: flex;
 
     textarea {
@@ -43,10 +34,6 @@ const Input = styled.article`
     }
 
     button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      right: 27px;
       font-size: 20px;
       background-color: transparent;
       border: none;
@@ -74,18 +61,19 @@ interface IFakeComment {
 function PostComment({ postId }: IPostComment) {
   const [input, setInput] = useState<string>("");
   const [fakeComment, setFakeComment] = useState<IFakeComment>();
-  const mutation = useMutation(comment);
+  // const mutation = useMutation(comment);
+  const { comment } = useRecoilValue<IArticle>(article);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = await mutation.mutateAsync({ postId, input });
+    // const response = await mutation.mutateAsync({ postId, input });
 
-    if (response.status === 200) {
-      const json = await response.json();
-      setFakeComment((prev) => (prev = json));
-      setInput("");
-    }
+    // if (response.status === 200) {
+    //   const json = await response.json();
+    //   setFakeComment((prev) => (prev = json));
+    //   setInput("");
+    // }
   }
 
   function onChange(event: React.FormEvent<HTMLTextAreaElement>) {
@@ -98,9 +86,9 @@ function PostComment({ postId }: IPostComment) {
 
   return (
     <Container>
-      <Content>
+      {/* <Content>
         <CommentLists postId={postId} fakeComment={fakeComment} />
-      </Content>
+      </Content> */}
       <Input>
         <form onSubmit={onSubmit}>
           <TextareaAutosize
