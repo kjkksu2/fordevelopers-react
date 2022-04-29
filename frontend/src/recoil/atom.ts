@@ -18,20 +18,18 @@ export const isLoggedIn = atom<boolean>({
 export interface IUser {
   choice: [];
   comment: [];
-  community: [];
+  dev: [];
   created_at: string;
   department: string;
   email: string;
   github_url: string;
   goToSchool: string;
   image_url: string;
-  interest: [];
   introduction: string;
   like: number;
   like_clicked_user: [];
   name: string;
   nickname: string;
-  recruitment: [];
   visit: number;
   _id: string;
 }
@@ -58,7 +56,19 @@ export const pagination = atom<IPagination>({
   },
 });
 
+export interface IComment {
+  content: string;
+  created_at: string;
+  like: number;
+  like_clicked_user: IUser;
+  post_id: string;
+  post_kinds: string;
+  user: IUser;
+  _id: string;
+}
+
 export interface IArticle {
+  category: string;
   _id: string;
   title: string;
   content: string;
@@ -73,7 +83,7 @@ export interface IArticle {
     like: number;
   };
   created_at: string;
-  comment: [];
+  comment: IComment[];
 }
 
 export const articleLists = atom<IArticle[]>({

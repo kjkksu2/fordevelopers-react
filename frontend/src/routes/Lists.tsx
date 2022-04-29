@@ -98,7 +98,7 @@ function Lists() {
   const [lists, setLists] = useRecoilState<IArticle[]>(articleLists);
   const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { pathname, search: queryString } = useLocation<string>();
+  const { search: queryString } = useLocation<string>();
   const history = useHistory();
   const loginState = useRecoilValue<boolean>(isLoggedIn);
 

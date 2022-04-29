@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { corsUrl } from "../../recoil/atom";
+import { article, corsUrl, IArticle, IComment, IUser } from "../../recoil/atom";
 
 const Container = styled.ul`
   margin-top: 15px;
-  margin-bottom: 75px;
+  background-color: ${(props) => props.theme.bgColors.lighter};
+  padding: 15px;
 `;
 
 const Comment = styled.li`
@@ -46,6 +47,7 @@ const Comment = styled.li`
       user-select: text;
       line-height: 25px;
       font-size: 15px;
+      white-space: pre-wrap;
     }
 
     .time {
@@ -55,42 +57,14 @@ const Comment = styled.li`
   }
 `;
 
-interface ICommentLists {
-  postId?: string;
-  fakeComment?: IList;
+interface IFakeComment {
+  fakeComment?: IComment;
 }
 
-interface IList {
-  content: string;
-  created_at: string;
-  user: {
-    nickname: string;
-    image_url: string;
-  };
-}
-
-function CommentLists({ postId, fakeComment }: ICommentLists) {
+function CommentLists({ fakeComment }: IFakeComment) {
   const backendUrl = useRecoilValue(corsUrl);
-  const [lists, setLists] = useState<IList[]>([]);
+  const { comment: lists } = useRecoilValue<IArticle>(article);
   const [time, setTime] = useState("");
-
-  useEffect(() => {
-    async function fetcher() {
-      const response = await fetch(
-        `${backendUrl}/menus/devs/post/${postId}/commentLists`,
-        {
-          credentials: "include",
-        }
-      );
-
-      if (response.status === 200) {
-        const json = await response.json();
-        setLists((lists) => (lists = json));
-      }
-    }
-
-    fetcher();
-  }, [postId, fakeComment]);
 
   function dateTime(created_at: string) {
     const writtenTime = new Date(created_at);
@@ -122,14 +96,28 @@ function CommentLists({ postId, fakeComment }: ICommentLists) {
 
   return (
     <Container>
-      {lists.map((item, idx) => (
+      {fakeComment && (
+        <Comment>
+          <div className="first-column">
+            <img src={fakeComment?.user.image_url} />
+          </div>
+          <div className="second-column">
+            <span className="nickname">{fakeComment?.user.nickname}</span>
+            <pre className="content">{fakeComment?.content}</pre>
+            <span className="time">
+              {fakeComment && commentTime(fakeComment.created_at)}
+            </span>
+          </div>
+        </Comment>
+      )}
+      {lists?.map((item, idx) => (
         <Comment key={idx}>
           <div className="first-column">
             <img src={item.user.image_url} />
           </div>
           <div className="second-column">
             <span className="nickname">{item.user.nickname}</span>
-            <span className="content">{item.content}</span>
+            <pre className="content">{item.content}</pre>
             <span className="time">{commentTime(item.created_at)}</span>
           </div>
         </Comment>

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -147,11 +147,10 @@ const Info = styled.div`
 function Articles() {
   const loginState = useRecoilValue(isLoggedIn);
   const lists = useRecoilValue<IArticle[]>(articleLists);
-  const setArticle = useSetRecoilState<IArticle>(article);
-  const articleMatch = useRouteMatch<{ id: string }>(
-    "/board/:id([0-9a-f]{24})"
-  );
-  const history = useHistory();
+  const { search: queryString } = useLocation<string>();
+
+  const categoryRegex = /category=[a-z]+/g;
+  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
 
   function calculateTime(end: number, start: number, convertNumber: 60 | 24) {
     let count = 0;
@@ -229,14 +228,13 @@ function Articles() {
     }
   }
 
-  function onClick(post: IArticle) {
-    setArticle(post);
-  }
-
   return (
     <Container>
       {lists.map((item, idx) => (
-        <Link to={`/board/${item._id}`} key={idx} onClick={() => onClick(item)}>
+        <Link
+          to={`/board/article?category=${category}&id=${item._id}`}
+          key={idx}
+        >
           <motion.li className="list" whileHover={{ x: 20 }}>
             <Writer isHere={loginState}>
               <div className="first-row">

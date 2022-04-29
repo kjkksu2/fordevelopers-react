@@ -15,6 +15,7 @@ export const googleCallback = async (_, __, profile, done) => {
     if (!user) {
       user = await User.create({
         name: given_name,
+        nickname: given_name,
         image_url,
         email,
       });

@@ -8,6 +8,8 @@ import {
   write,
   search,
   updatePost,
+  article,
+  writeComment,
 } from "../controllers/playController";
 
 const uploadImages = multer({ dest: "uploads/images" });
@@ -34,6 +36,11 @@ playRouter.post(
 );
 
 /************************************
+            게시물 불러오기
+ ************************************/
+playRouter.get("/board/article", article);
+
+/************************************
              게시물 수정
  ************************************/
 playRouter.post(
@@ -52,17 +59,11 @@ playRouter.post(
 /************************************
             댓글 등록하기
  ************************************/
-playRouter.post(
-  "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/comment",
-  comment
-);
+playRouter.post("/board/comment/write", writeComment);
 
 /************************************
           댓글 전부 가져오기
  ************************************/
-playRouter.get(
-  "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/commentLists",
-  commentLists
-);
+playRouter.get("/board/comment", comment);
 
 export default playRouter;

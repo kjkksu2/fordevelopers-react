@@ -29,16 +29,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
-  github_url: {
-    type: String,
-    default: "",
-  },
-  interest: [
-    {
-      type: String,
-      default: "",
-    },
-  ],
   like: {
     type: Number,
     default: 0,
@@ -66,16 +56,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  recruitment: [
+  dev: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Recruitment",
-    },
-  ],
-  community: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Community",
+      ref: "Dev",
     },
   ],
   comment: [

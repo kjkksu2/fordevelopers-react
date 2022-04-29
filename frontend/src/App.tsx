@@ -51,7 +51,7 @@ function App() {
           <Header />
           <Write />
         </Route>
-        <Route exact path="/board/:id([0-9a-f]{24})">
+        <Route exact path="/board/article">
           <Header />
           <Post />
         </Route>

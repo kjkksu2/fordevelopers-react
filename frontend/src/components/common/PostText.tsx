@@ -11,18 +11,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { article, corsUrl } from "../../recoil/atom";
+import { article, corsUrl, IArticle } from "../../recoil/atom";
 
 const Container = styled.section`
   width: 700px;
   margin: 0 auto;
   background-color: ${(props) => props.theme.bgColors.lighter};
   padding: 20px;
-  border-radius: 15px;
 `;
 
 const User = styled.article`
@@ -128,32 +127,9 @@ const Options = styled(motion.div)`
   }
 `;
 
-const EllipsisBox = styled(motion.div)`
-  position: fixed;
-  top: 100px;
-  display: flex;
-  background-color: white;
-  padding: 10px;
-  border-radius: 10px;
-
-  .common {
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 5px;
-
-    span {
-      margin-left: 10px;
-    }
-
-    &:hover {
-      background-color: #e3e7e6;
-    }
-  }
-`;
-
 function PostText() {
-  const backendUrl = useRecoilValue(corsUrl);
-  const post = useRecoilValue(article);
+  const backendUrl = useRecoilValue<string>(corsUrl);
+  const post = useRecoilValue<IArticle>(article);
 
   function showTime(created_at: string | undefined) {
     const writtenTime = created_at && new Date(created_at);
@@ -210,13 +186,13 @@ function PostText() {
       <User>
         <Writer>
           <div className="first-column">
-            <img src={post?.user.image_url} />
+            <img src={post.user?.image_url} />
           </div>
           <div className="second-column">
             <div className="info">
-              <span>{post?.user.nickname}</span>
+              <span>{post.user?.nickname}</span>
               <FontAwesomeIcon icon={faHeart} className="heart-icon" />
-              <span>{post?.user.like}</span>
+              <span>{post.user?.like}</span>
             </div>
             <div className="time">{showTime(post?.created_at)}</div>
           </div>
@@ -233,7 +209,7 @@ function PostText() {
         </div>
         <div className="icon comment">
           <FontAwesomeIcon icon={faMessage} />
-          <span>{post.comment.length}</span>
+          <span>{post.comment?.length}</span>
         </div>
         <div className="icon choice">
           <FontAwesomeIcon icon={faScroll} />

@@ -1,5 +1,6 @@
 import Dev from "../models/Dev";
 import Comment from "../models/Comment";
+import User from "../models/User";
 
 /************************************
         전체 게시물 불러오기
@@ -99,6 +100,34 @@ export const write = async (req, res) => {
 };
 
 /************************************
+            게시물 불러오기
+ ************************************/
+export const article = async (req, res) => {
+  try {
+    const {
+      query: { category, id },
+    } = req;
+
+    let article = null;
+    if (category === "dev") {
+      article = await Dev.findById(id).populate([
+        "user",
+        {
+          path: "comment",
+          options: { sort: { _id: -1 } },
+          populate: { path: "user" },
+        },
+      ]);
+    }
+
+    return res.status(200).json({ category, article });
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+/************************************
              게시물 수정
  ************************************/
 export const updatePost = async (req, res) => {
@@ -135,27 +164,35 @@ export const deletePost = async (req, res) => {
 /************************************
             댓글 등록하기
  ************************************/
-export const comment = async (req, res) => {
+export const writeComment = async (req, res) => {
   try {
     const {
-      body: { input: content },
-      params: { categories, postId },
+      query: { id: articleId, category },
+      body: { input },
       session: {
         user: { _id },
       },
     } = req;
 
-    let comment = null;
-    if (categories === "devs") {
-      comment = await Comment.create({
-        content,
-        post_kinds: categories,
-        post_id: postId,
-        user: _id,
-      });
-    }
+    const comment = await Comment.create({
+      content: input,
+      post_kinds: category,
+      post_id: articleId,
+      user: _id,
+    });
+    await comment.populate("user");
 
-    await comment.populate("user", ["nickname", "image_url"]);
+    let article = null;
+    if (category === "dev") {
+      article = await Dev.findById(articleId);
+    }
+    article.comment.push(comment);
+    await article.save();
+
+    const user = await User.findById(_id);
+    user.comment.push(comment);
+    await user.save();
+
     return res.status(200).json(comment);
   } catch (error) {
     console.log(error);
@@ -166,18 +203,15 @@ export const comment = async (req, res) => {
 /************************************
           댓글 전부 가져오기
  ************************************/
-export const commentLists = async (req, res) => {
+export const comment = async (req, res) => {
   try {
     const {
-      params: { categories, postId },
+      query: { category, id },
     } = req;
 
     let commentLists = null;
-    if (categories === "devs") {
-      commentLists = await Comment.find({ post_id: postId }).populate("user", [
-        "nickname",
-        "image_url",
-      ]);
+    if (category === "dev") {
+      commentLists = await Dev.findById(id).populate("comment");
     }
 
     return res.status(200).json(commentLists);
