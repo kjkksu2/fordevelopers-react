@@ -43,7 +43,7 @@ function App() {
           <Header />
           <Home />
         </Route>
-        <Route exact path={["/board", "/board/search"]}>
+        <Route exact path={["/board", "/board/search", "/board/remove"]}>
           <Header />
           <Lists />
         </Route>

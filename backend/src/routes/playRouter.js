@@ -10,6 +10,7 @@ import {
   update,
   article,
   writeComment,
+  remove,
 } from "../controllers/playController";
 
 const uploadImages = multer({ dest: "uploads/images" });
@@ -52,10 +53,7 @@ playRouter.post(
 /************************************
              게시물 삭제
  ************************************/
-playRouter.post(
-  "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/delete",
-  deletePost
-);
+playRouter.get("/board/remove", remove);
 
 /************************************
             댓글 등록하기

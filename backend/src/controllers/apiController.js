@@ -7,13 +7,13 @@ export const deleteImage = async (req, res) => {
   try {
     const {
       query: { category, id },
-      body: { existingImage },
+      body: { erasedImage },
     } = req;
 
     if (category === "dev") {
       let post = await Dev.findById(id);
 
-      existingImage.forEach((element) => {
+      erasedImage.forEach((element) => {
         post.images = post.images.filter(
           (image) => image.split("images\\")[1] !== element
         );

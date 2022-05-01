@@ -190,20 +190,14 @@ function PostText() {
     return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   }
 
-  async function updateArticle() {
+  function updateArticle() {
     history.push(`/board/update${queryString}`);
   }
 
   async function deleteArticle() {
-    const response = await fetch(
-      `${backendUrl}/menus/devs/post/${post?._id}/delete`,
-      {
-        method: "POST",
-      }
-    );
-
-    if (response.status === 200) {
-      window.location.replace("http://localhost:3000/devs");
+    if (window.confirm("게시글을 삭제하시겠습니까?")) {
+      await fetch(`${backendUrl}/play/board/remove${queryString}`);
+      window.location.replace(`/board/remove${queryString}`);
     }
   }
 

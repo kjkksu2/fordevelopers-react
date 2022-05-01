@@ -161,13 +161,15 @@ export const update = async (req, res) => {
 /************************************
              게시물 삭제
  ************************************/
-export const deletePost = async (req, res) => {
+export const remove = async (req, res) => {
   try {
     const {
-      params: { postId },
+      query: { category, id },
     } = req;
 
-    await Dev.findByIdAndDelete(postId);
+    if (category === "dev") {
+      await Dev.findByIdAndDelete(id);
+    }
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);
