@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { corsUrl } from "../recoil/atom";
+import { article, corsUrl, IArticle } from "../recoil/atom";
 
 const Form = styled.form`
   width: 700px;
@@ -87,7 +87,8 @@ const Content = styled.textarea`
 
 const Image = styled.ul`
   background-color: white;
-  display: none;
+  /* display: none; */
+  display: flex;
   border-top: 2px solid #e3e3e3;
   padding-top: 15px;
   flex-wrap: wrap;
@@ -131,14 +132,22 @@ const Options = styled.div`
 `;
 
 function Write() {
-  const backendUrl = useRecoilValue(corsUrl);
+  const backendUrl = useRecoilValue<string>(corsUrl);
+  const [post, setPost] = useRecoilState<IArticle>(article);
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
-  const { search: queryString } = useLocation<string>();
+  const { pathname, search: queryString } = useLocation<string>();
   const formRef = useRef<HTMLFormElement>(null);
   const ulRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const liRef = useRef<HTMLLIElement>(null);
   let imageFileList: File[] = [];
+  let erasedImage: string[] = [];
+
+  const categoryRegex = /category=[a-z]+/g;
+  const idRegex = /id=[0-9a-f]{24}/g;
+  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
+  const id = queryString.match(idRegex)?.join("").split("=")[1];
 
   function removeImage(event: MouseEvent) {
     if (window.confirm("삭제하시겠습니까?")) {
@@ -217,20 +226,70 @@ function Write() {
     window.location.href = `/board${queryString}&page=1`;
   }
 
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (title === "") return alert("제목을 적어주세요.");
 
     if (content === "") return alert("내용을 적어주세요.");
 
+    if (pathname.includes("update")) {
+      await fetch(
+        `${backendUrl}/api/board/image/delete?category=${category}&id=${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ erasedImage }),
+        }
+      );
+    }
+
     formRef.current?.submit();
+  }
+
+  useEffect(() => {
+    if (pathname.includes("update")) {
+      (async function () {
+        const { article, category: resCategory } = await (
+          await fetch(
+            `${backendUrl}/play/board/article?category=${category}&id=${id}`
+          )
+        ).json();
+        setPost(() => ({ ...article, category: resCategory }));
+      })();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pathname.includes("update")) {
+      setTitle(post.title ?? "");
+      setContent(post.content ?? "");
+    } else {
+      setTitle("");
+      setContent("");
+    }
+  }, [post, pathname]);
+
+  async function clickedBackendImage(event: React.MouseEvent<HTMLLIElement>) {
+    if (window.confirm("삭제하시겠습니까?")) {
+      const clickedTarget = event.target as HTMLImageElement;
+      const clickedImage = clickedTarget.parentElement as Element;
+      const children = clickedImage.children[0] as HTMLImageElement;
+      const currentSrc = children.currentSrc;
+
+      erasedImage.push(currentSrc.split("images/")[1]);
+
+      clickedImage.remove();
+    }
   }
 
   return (
     <Form
       onSubmit={onSubmit}
-      action={`${backendUrl}/play/board/write${queryString}`}
+      action={`${backendUrl}/play${pathname + queryString}`}
       method="POST"
       encType="multipart/form-data"
       ref={formRef}
@@ -263,7 +322,19 @@ function Write() {
             onChange={changeContent}
             value={content}
           />
-          <Image ref={ulRef}></Image>
+          <Image ref={ulRef}>
+            {pathname.includes("update") &&
+              post.images?.map((element, idx) => (
+                <li
+                  key={idx}
+                  ref={liRef}
+                  onClick={clickedBackendImage}
+                  className={`img${idx}`}
+                >
+                  <img src={backendUrl + element} className="previewImage" />
+                </li>
+              ))}
+          </Image>
         </div>
       </Box>
       <Options>

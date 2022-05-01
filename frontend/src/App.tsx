@@ -47,7 +47,7 @@ function App() {
           <Header />
           <Lists />
         </Route>
-        <Route exact path="/board/write">
+        <Route exact path={["/board/write", "/board/update"]}>
           <Header />
           <Write />
         </Route>

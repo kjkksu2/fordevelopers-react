@@ -12,7 +12,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { article, corsUrl, IArticle } from "../../recoil/atom";
@@ -22,6 +22,29 @@ const Container = styled.section`
   margin: 0 auto;
   background-color: ${(props) => props.theme.bgColors.lighter};
   padding: 20px;
+  position: relative;
+`;
+
+const Options = styled.ul`
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  margin: 10px;
+
+  li {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 10px;
+
+    &:hover {
+      background-color: #7f8c8d;
+    }
+
+    span {
+      margin-left: 3px;
+    }
+  }
 `;
 
 const User = styled.article`
@@ -74,7 +97,17 @@ const Content = styled.article`
   }
 `;
 
-const Options = styled(motion.div)`
+const Image = styled.ul`
+  li {
+    margin-top: 20px;
+
+    img {
+      max-width: 100%;
+    }
+  }
+`;
+
+const Status = styled(motion.div)`
   display: flex;
   font-size: 20px;
   position: relative;
@@ -130,6 +163,8 @@ const Options = styled(motion.div)`
 function PostText() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const post = useRecoilValue<IArticle>(article);
+  const { search: queryString } = useLocation<string>();
+  const history = useHistory();
 
   function showTime(created_at: string | undefined) {
     const writtenTime = created_at && new Date(created_at);
@@ -155,20 +190,11 @@ function PostText() {
     return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   }
 
-  async function updatePost() {
-    const response = await fetch(
-      `${backendUrl}/menus/devs/post/${post?._id}/update`,
-      {
-        method: "POST",
-      }
-    );
-
-    if (response.status === 200) {
-      window.location.replace(`http://localhost:3000/devs/${post?._id}`);
-    }
+  async function updateArticle() {
+    history.push(`/board/update${queryString}`);
   }
 
-  async function deletePost() {
+  async function deleteArticle() {
     const response = await fetch(
       `${backendUrl}/menus/devs/post/${post?._id}/delete`,
       {
@@ -183,6 +209,16 @@ function PostText() {
 
   return (
     <Container>
+      <Options>
+        <li className="update" onClick={updateArticle}>
+          <FontAwesomeIcon icon={faPenToSquare} />
+          <span>수정</span>
+        </li>
+        <li className="delete" onClick={deleteArticle}>
+          <FontAwesomeIcon icon={faTrashCan} />
+          <span>삭제</span>
+        </li>
+      </Options>
       <User>
         <Writer>
           <div className="first-column">
@@ -202,7 +238,14 @@ function PostText() {
         <h1>{post.title}</h1>
         <p>{post.content}</p>
       </Content>
-      <Options>
+      <Image>
+        {post.images?.map((element, idx) => (
+          <li key={idx}>
+            <img src={backendUrl + element} />
+          </li>
+        ))}
+      </Image>
+      <Status>
         <div className="icon like">
           <FontAwesomeIcon icon={faThumbsUp} />
           <span>{post.like}</span>
@@ -219,28 +262,7 @@ function PostText() {
           <FontAwesomeIcon icon={faEye} />
           <span>{post.views}</span>
         </div>
-      </Options>
-      {/* <AnimatePresence>
-        {ellipsis ? (
-          <EllipsisBox
-            initial={{ scale: 1.1, opacity: 0, x: -230, y: 10 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 1.1, opacity: 0 }}
-            transition={{
-              duration: 0.3,
-            }}
-          >
-            <div className="common">
-              <FontAwesomeIcon icon={faPenToSquare} />
-              <span onClick={() => updatePost()}>수정</span>
-            </div>
-            <div className="common">
-              <FontAwesomeIcon icon={faTrashCan} />
-              <span onClick={() => deletePost()}>삭제</span>
-            </div>
-          </EllipsisBox>
-        ) : null}
-      </AnimatePresence> */}
+      </Status>
     </Container>
   );
 }

@@ -130,14 +130,28 @@ export const article = async (req, res) => {
 /************************************
              게시물 수정
  ************************************/
-export const updatePost = async (req, res) => {
+export const update = async (req, res) => {
   try {
     const {
-      params: { postId },
+      body: { title, content },
+      query: { category, id },
+      files: { imageFile },
     } = req;
 
-    await Dev.findByIdAndUpdate(postId);
-    return res.sendStatus(200);
+    let article = null;
+    if (category === "dev") {
+      article = await Dev.findByIdAndUpdate(id, {
+        title,
+        content,
+      });
+
+      imageFile?.forEach((file) => article.images.push(`/${file.path}`));
+      await article.save();
+    }
+
+    return res.redirect(
+      `http://localhost:3000/board/article?category=${category}&id=${id}`
+    );
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);

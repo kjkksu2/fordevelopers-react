@@ -7,7 +7,7 @@ import {
   deletePost,
   write,
   search,
-  updatePost,
+  update,
   article,
   writeComment,
 } from "../controllers/playController";
@@ -44,8 +44,9 @@ playRouter.get("/board/article", article);
              게시물 수정
  ************************************/
 playRouter.post(
-  "/:categories(devs|communities)/post/:postId([0-9a-f]{24})/update",
-  updatePost
+  "/board/update",
+  uploadImages.fields([{ name: "imageFile" }]),
+  update
 );
 
 /************************************

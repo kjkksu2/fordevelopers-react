@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import MongoStore from "connect-mongo";
 import userRouter from "./routes/userRouter";
 import playRouter from "./routes/playRouter";
+import apiRouter from "./routes/apiRouter";
 
 const app = express();
 
@@ -13,6 +14,7 @@ dotenv.config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -34,5 +36,6 @@ app.use(passport.session());
 
 app.use("/users", userRouter);
 app.use("/play", playRouter);
+app.use("/api", apiRouter);
 
 export default app;

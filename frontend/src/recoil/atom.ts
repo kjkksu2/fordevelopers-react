@@ -69,21 +69,18 @@ export interface IComment {
 
 export interface IArticle {
   category: string;
-  _id: string;
-  title: string;
-  content: string;
-  like: number;
   choice: number;
-  views: number;
-  user: {
-    nickname: string;
-    image_url: string;
-    department: string;
-    goToSchool: string;
-    like: number;
-  };
-  created_at: string;
+  choice_clicked_user: [];
   comment: IComment[];
+  content: string;
+  created_at: string;
+  images: string[];
+  like: number;
+  like_clicked_user: [];
+  title: string;
+  user: IUser;
+  views: number;
+  _id: string;
 }
 
 export const articleLists = atom<IArticle[]>({
