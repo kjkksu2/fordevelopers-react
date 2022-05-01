@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { article, corsUrl, IArticle } from "../../recoil/atom";
 
@@ -162,7 +162,7 @@ const Status = styled(motion.div)`
 
 function PostText() {
   const backendUrl = useRecoilValue<string>(corsUrl);
-  const post = useRecoilValue<IArticle>(article);
+  const [post, setPost] = useRecoilState<IArticle>(article);
   const { search: queryString } = useLocation<string>();
   const history = useHistory();
 
@@ -201,6 +201,41 @@ function PostText() {
     }
   }
 
+  async function clickLike() {
+    const response = await fetch(`${backendUrl}/api/board/like${queryString}`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (response.status !== 200) {
+      alert("이미 눌렀습니다.");
+    } else {
+      setPost((prev) => ({
+        ...prev,
+        like: prev.like + 1,
+      }));
+    }
+  }
+
+  async function clickScrap() {
+    const response = await fetch(
+      `${backendUrl}/api/board/scrap${queryString}`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    if (response.status !== 200) {
+      alert("이미 눌렀습니다.");
+    } else {
+      setPost((prev) => ({
+        ...prev,
+        scrap: prev.scrap + 1,
+      }));
+    }
+  }
+
   return (
     <Container>
       <Options>
@@ -222,7 +257,7 @@ function PostText() {
             <div className="info">
               <span>{post.user?.nickname}</span>
               <FontAwesomeIcon icon={faHeart} className="heart-icon" />
-              <span>{post.user?.like}</span>
+              <span>{post.user?.heart}</span>
             </div>
             <div className="time">{showTime(post?.created_at)}</div>
           </div>
@@ -241,7 +276,7 @@ function PostText() {
       </Image>
       <Status>
         <div className="icon like">
-          <FontAwesomeIcon icon={faThumbsUp} />
+          <FontAwesomeIcon icon={faThumbsUp} onClick={clickLike} />
           <span>{post.like}</span>
         </div>
         <div className="icon comment">
@@ -249,8 +284,8 @@ function PostText() {
           <span>{post.comment?.length}</span>
         </div>
         <div className="icon choice">
-          <FontAwesomeIcon icon={faScroll} />
-          <span>{post.choice}</span>
+          <FontAwesomeIcon icon={faScroll} onClick={clickScrap} />
+          <span>{post.scrap}</span>
         </div>
         <div className="icon view">
           <FontAwesomeIcon icon={faEye} />

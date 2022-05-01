@@ -49,6 +49,18 @@ function Post() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async function () {
+      await fetch(
+        `${backendUrl}/api/board/views?category=${category}&id=${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+    })();
+  }, []);
+
   return (
     <Container>
       {isLoading ? (

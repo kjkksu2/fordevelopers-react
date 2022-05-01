@@ -25,11 +25,11 @@ const devSchema = mongoose.Schema({
       ref: "User",
     },
   ],
-  choice: {
+  scrap: {
     type: Number,
     default: 0,
   },
-  choice_clicked_user: [
+  scrap_clicked_user: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

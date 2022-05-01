@@ -29,11 +29,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
-  like: {
+  heart: {
     type: Number,
     default: 0,
   },
-  like_clicked_user: [
+  heart_clicked_user: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

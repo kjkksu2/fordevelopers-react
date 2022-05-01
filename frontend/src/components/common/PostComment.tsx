@@ -51,8 +51,7 @@ const Content = styled.article``;
 function PostComment() {
   const backendUrl = useRecoilValue(corsUrl);
   const [input, setInput] = useState<string>("");
-  const [fakeComment, setFakeComment] = useState<IComment>();
-  const { _id, category, comment } = useRecoilValue<IArticle>(article);
+  const [{ _id, category }, setPost] = useRecoilState<IArticle>(article);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,7 +70,10 @@ function PostComment() {
       )
     ).json();
 
-    setFakeComment(response);
+    setPost((prev) => ({
+      ...prev,
+      comment: [response, ...prev.comment],
+    }));
     setInput("");
   }
 
@@ -98,7 +100,7 @@ function PostComment() {
         </button>
       </Form>
       <Content>
-        <CommentLists fakeComment={fakeComment} />
+        <CommentLists />
       </Content>
     </Container>
   );

@@ -26,8 +26,8 @@ export interface IUser {
   goToSchool: string;
   image_url: string;
   introduction: string;
-  like: number;
-  like_clicked_user: [];
+  heart: number;
+  heart_clicked_user: [];
   name: string;
   nickname: string;
   visit: number;
@@ -60,7 +60,7 @@ export interface IComment {
   content: string;
   created_at: string;
   like: number;
-  like_clicked_user: IUser;
+  like_clicked_user: IUser[];
   post_id: string;
   post_kinds: string;
   user: IUser;
@@ -69,14 +69,14 @@ export interface IComment {
 
 export interface IArticle {
   category: string;
-  choice: number;
-  choice_clicked_user: [];
+  scrap: number;
+  scrap_clicked_user: IUser[];
   comment: IComment[];
   content: string;
   created_at: string;
   images: string[];
   like: number;
-  like_clicked_user: [];
+  like_clicked_user: IUser[];
   title: string;
   user: IUser;
   views: number;

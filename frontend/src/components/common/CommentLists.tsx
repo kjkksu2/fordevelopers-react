@@ -57,11 +57,7 @@ const Comment = styled.li`
   }
 `;
 
-interface IFakeComment {
-  fakeComment?: IComment;
-}
-
-function CommentLists({ fakeComment }: IFakeComment) {
+function CommentLists() {
   const backendUrl = useRecoilValue(corsUrl);
   const { comment: lists } = useRecoilValue<IArticle>(article);
   const [time, setTime] = useState("");
@@ -96,20 +92,6 @@ function CommentLists({ fakeComment }: IFakeComment) {
 
   return (
     <Container>
-      {fakeComment && (
-        <Comment>
-          <div className="first-column">
-            <img src={fakeComment?.user.image_url} />
-          </div>
-          <div className="second-column">
-            <span className="nickname">{fakeComment?.user.nickname}</span>
-            <pre className="content">{fakeComment?.content}</pre>
-            <span className="time">
-              {fakeComment && commentTime(fakeComment.created_at)}
-            </span>
-          </div>
-        </Comment>
-      )}
       {lists?.map((item, idx) => (
         <Comment key={idx}>
           <div className="first-column">
