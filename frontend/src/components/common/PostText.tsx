@@ -166,6 +166,9 @@ function PostText() {
   const { search: queryString } = useLocation<string>();
   const history = useHistory();
 
+  const categoryRegex = /category=[a-z]+/g;
+  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
+
   function showTime(created_at: string | undefined) {
     const writtenTime = created_at && new Date(created_at);
 
@@ -196,8 +199,10 @@ function PostText() {
 
   async function deleteArticle() {
     if (window.confirm("게시글을 삭제하시겠습니까?")) {
-      await fetch(`${backendUrl}/play/board/remove${queryString}`);
-      window.location.replace(`/board/remove${queryString}`);
+      await fetch(`${backendUrl}/play/board/remove${queryString}`, {
+        credentials: "include",
+      });
+      window.location.replace(`/board?category=${category}&page=1`);
     }
   }
 

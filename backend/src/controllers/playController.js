@@ -76,6 +76,9 @@ export const write = async (req, res) => {
       body: { title, content },
       query: { category },
       files: { imageFile },
+      session: {
+        user: { _id },
+      },
     } = req;
 
     let article = null;
@@ -89,6 +92,10 @@ export const write = async (req, res) => {
       imageFile?.forEach((file) => article.images.push(`/${file.path}`));
       await article.save();
     }
+
+    const user = await User.findById(_id);
+    user.dev.push(article);
+    await user.save();
 
     return res.redirect(
       `http://localhost:3000/board?category=${category}&page=1`
@@ -165,11 +172,19 @@ export const remove = async (req, res) => {
   try {
     const {
       query: { category, id },
+      session: {
+        user: { _id },
+      },
     } = req;
 
     if (category === "dev") {
       await Dev.findByIdAndDelete(id);
     }
+
+    const user = await User.findById(_id);
+    user.dev = user.dev.filter((element) => !String(element).includes(id));
+    await user.save();
+
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);
