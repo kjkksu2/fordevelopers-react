@@ -10,7 +10,7 @@ import {
   isLoggedIn,
   pagination,
 } from "../recoil/atom";
-import Articles from "../components/common/Articles";
+import Articles from "./Articles";
 import Pagination from "../components/common/Pagination";
 
 const Container = styled.main`

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { article, corsUrl, IArticle } from "../../recoil/atom";
-import PostComment from "./PostComment";
-import PostText from "./PostText";
+import { article, corsUrl, IArticle } from "../recoil/atom";
+import PostComment from "../components/common/PostComment";
+import PostText from "../components/common/PostText";
 
 const Container = styled.main`
   padding: 150px 0;

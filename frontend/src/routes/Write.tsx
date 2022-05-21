@@ -85,10 +85,9 @@ const Content = styled.textarea`
   }
 `;
 
-const Image = styled.ul`
+const Image = styled.ul<{ imageExist: boolean }>`
   background-color: white;
-  /* display: none; */
-  display: flex;
+  display: ${(props) => (props.imageExist ? "flex" : "none")};
   border-top: 2px solid #e3e3e3;
   padding-top: 15px;
   flex-wrap: wrap;
@@ -141,12 +140,13 @@ function Write() {
   const ulRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const liRef = useRef<HTMLLIElement>(null);
+  const [imageExist, setImageExist] = useState<boolean>(false);
   let imageFileList: File[] = [];
-  let erasedImage: string[] = [];
+  const [erasedImage, setErasedImage] = useState<string[]>([]);
 
   const categoryRegex = /category=[a-z]+/g;
-  const idRegex = /id=[0-9a-f]{24}/g;
   const category = queryString.match(categoryRegex)?.join("").split("=")[1];
+  const idRegex = /id=[0-9a-f]{24}/g;
   const id = queryString.match(idRegex)?.join("").split("=")[1];
 
   function removeImage(event: MouseEvent) {
@@ -171,6 +171,8 @@ function Write() {
       current.files = dt.files;
 
       clickedImage.remove(); // remove를 먼저하면 inputList가 바뀐다.
+
+      imageFileList.length === 0 && setImageExist(false);
     }
   }
 
@@ -200,9 +202,9 @@ function Write() {
         li.appendChild(img);
 
         const current = ulRef.current as HTMLUListElement;
-        let style = current.style as CSSStyleDeclaration;
         current.appendChild(li);
-        style.setProperty("display", "flex");
+
+        setImageExist(true);
       });
     }
   }
@@ -267,6 +269,8 @@ function Write() {
     if (pathname.includes("update")) {
       setTitle(post.title ?? "");
       setContent(post.content ?? "");
+
+      post?.images.length > 0 ? setImageExist(true) : setImageExist(false);
     } else {
       setTitle("");
       setContent("");
@@ -280,9 +284,11 @@ function Write() {
       const children = clickedImage.children[0] as HTMLImageElement;
       const currentSrc = children.currentSrc;
 
-      erasedImage.push(currentSrc.split("images/")[1]);
+      setErasedImage((prev) => [...prev, currentSrc.split("images/")[1]]);
 
       clickedImage.remove();
+
+      erasedImage.length === post.images?.length - 1 && setImageExist(false);
     }
   }
 
@@ -322,7 +328,7 @@ function Write() {
             onChange={changeContent}
             value={content}
           />
-          <Image ref={ulRef}>
+          <Image ref={ulRef} imageExist={imageExist}>
             {pathname.includes("update") &&
               post.images?.map((element, idx) => (
                 <li

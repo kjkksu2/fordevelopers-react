@@ -4,7 +4,8 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
-import { article, articleLists, IArticle, isLoggedIn } from "../../recoil/atom";
+import { article, articleLists, IArticle, isLoggedIn } from "../recoil/atom";
+import WrittenTime from "../components/common/WrittenTime";
 
 const Container = styled.ul`
   width: 100%;
@@ -152,82 +153,6 @@ function Articles() {
   const categoryRegex = /category=[a-z]+/g;
   const category = queryString.match(categoryRegex)?.join("").split("=")[1];
 
-  function calculateTime(end: number, start: number, convertNumber: 60 | 24) {
-    let count = 0;
-    let i = start;
-
-    while (true) {
-      if (i === end) break;
-      if (i === convertNumber) i = 0;
-
-      count++;
-      i++;
-    }
-
-    return count;
-  }
-
-  function showTime(created_at: string) {
-    const currentTime = new Date();
-    const writtenTime = new Date(created_at);
-
-    // 초
-    const S = 60 * 1000;
-    if (currentTime.getTime() - writtenTime.getTime() < S) {
-      return `${calculateTime(
-        currentTime.getSeconds(),
-        writtenTime.getSeconds(),
-        60
-      )}초 전`;
-    }
-
-    // 분
-    const M = 60 * 60 * 1000;
-    if (currentTime.getTime() - writtenTime.getTime() < M) {
-      return `${calculateTime(
-        currentTime.getMinutes(),
-        writtenTime.getMinutes(),
-        60
-      )}분 전`;
-    }
-
-    // 시간
-    const H = 23 * 60 * 60 * 1000;
-    if (currentTime.getTime() - writtenTime.getTime() < H) {
-      return `${calculateTime(
-        currentTime.getHours(),
-        writtenTime.getHours(),
-        24
-      )}시간 전`;
-    }
-
-    // 년
-    const Y = 365 * 24 * 60 * 60 * 1000;
-    const year = writtenTime.toLocaleString("en-US", { year: "numeric" });
-    const month = writtenTime
-      .toLocaleString("en-US", { month: "numeric" })
-      .padStart(2, "0");
-    const day = writtenTime
-      .toLocaleString("en-US", { day: "numeric" })
-      .padStart(2, "0");
-
-    const hour = writtenTime
-      .toLocaleString("en-US", { hour: "numeric", hour12: false })
-      .padStart(2, "0");
-    const minute = writtenTime
-      .toLocaleString("ko-KR", { minute: "numeric" })
-      .padStart(2, "0");
-    const second = writtenTime
-      .toLocaleString("ko-KR", { second: "numeric" })
-      .padStart(2, "0");
-
-    if (currentTime.getTime() - writtenTime.getTime() < Y) {
-      return `${month}-${day} ${hour}:${minute}:${second}`;
-    } else {
-      return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-    }
-  }
-
   return (
     <Container>
       {lists.map((item, idx) => (
@@ -269,7 +194,9 @@ function Articles() {
               </div>
               <div className="created_at common">
                 <FontAwesomeIcon icon={faClock} className="clock-icon" />
-                <span>{showTime(item.created_at)}</span>
+                <span>
+                  <WrittenTime created_at={item.created_at} />
+                </span>
               </div>
             </Info>
           </motion.li>

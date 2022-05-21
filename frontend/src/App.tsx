@@ -5,7 +5,7 @@ import Home from "./routes/Home";
 import Write from "./routes/Write";
 import Lists from "./routes/Lists";
 import Board from "./routes/Board";
-import Post from "./components/common/Post";
+import Post from "./routes/Post";
 
 function App() {
   // useEffect(() => {

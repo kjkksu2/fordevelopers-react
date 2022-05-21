@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { article, corsUrl, IArticle, IComment, IUser } from "../../recoil/atom";
+import WrittenTime from "./WrittenTime";
 
 const Container = styled.ul`
   margin-top: 15px;
@@ -60,35 +61,6 @@ const Comment = styled.li`
 function CommentLists() {
   const backendUrl = useRecoilValue(corsUrl);
   const { comment: lists } = useRecoilValue<IArticle>(article);
-  const [time, setTime] = useState("");
-
-  function dateTime(created_at: string) {
-    const writtenTime = new Date(created_at);
-
-    const year = writtenTime.toLocaleString("ko-KR", { year: "numeric" });
-    const month = writtenTime
-      .toLocaleString("ko-KR", { month: "numeric" })
-      .padStart(2, "0");
-    const day = writtenTime
-      .toLocaleString("ko-KR", { day: "numeric" })
-      .padStart(2, "0");
-
-    return `${year} ${month} ${day}`;
-  }
-
-  function commentTime(created_at: string) {
-    const writtenTime = new Date(created_at);
-
-    const hour = writtenTime
-      .toLocaleString("ko-KR", { hour: "2-digit" })
-      .padStart(2, "0")
-      .split("시")[0];
-    const minute = writtenTime
-      .toLocaleString("ko-KR", { minute: "numeric" })
-      .padStart(2, "0");
-
-    return `${hour}:${minute}`;
-  }
 
   return (
     <Container>
@@ -100,7 +72,9 @@ function CommentLists() {
           <div className="second-column">
             <span className="nickname">{item.user.nickname}</span>
             <pre className="content">{item.content}</pre>
-            <span className="time">{commentTime(item.created_at)}</span>
+            <span className="time">
+              <WrittenTime created_at={item.created_at} />
+            </span>
           </div>
         </Comment>
       ))}
