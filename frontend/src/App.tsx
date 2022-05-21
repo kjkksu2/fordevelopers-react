@@ -3,7 +3,6 @@ import Header from "./components/common/Header";
 import LoginSuccess from "./components/auth/LoginSuccess";
 import Home from "./routes/Home";
 import Write from "./routes/Write";
-import Lists from "./routes/Lists";
 import Board from "./routes/Board";
 import Post from "./routes/Post";
 
@@ -45,7 +44,7 @@ function App() {
         </Route>
         <Route exact path={["/board", "/board/search", "/board/remove"]}>
           <Header />
-          <Lists />
+          <Board />
         </Route>
         <Route exact path={["/board/write", "/board/update"]}>
           <Header />

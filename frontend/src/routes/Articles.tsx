@@ -1,10 +1,10 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { Link, useHistory, useLocation, useRouteMatch } from "react-router-dom";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { motion } from "framer-motion";
+import { Link, useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
-import { article, articleLists, IArticle, isLoggedIn } from "../recoil/atom";
+import { articleLists, IArticle, isLoggedIn } from "../recoil/atom";
 import WrittenTime from "../components/common/WrittenTime";
 
 const Container = styled.ul`
@@ -13,10 +13,12 @@ const Container = styled.ul`
   .list {
     margin: 0 300px;
     margin-bottom: 10px;
-    display: flex;
-    cursor: pointer;
     border-radius: 10px;
     overflow: hidden;
+
+    a {
+      display: flex;
+    }
   }
 `;
 
@@ -156,11 +158,8 @@ function Articles() {
   return (
     <Container>
       {lists.map((item, idx) => (
-        <Link
-          to={`/board/article?category=${category}&id=${item._id}`}
-          key={idx}
-        >
-          <motion.li className="list" whileHover={{ x: 20 }}>
+        <motion.li key={idx} className="list" whileHover={{ x: 20 }}>
+          <Link to={`/board/article?category=${category}&id=${item._id}`}>
             <Writer isHere={loginState}>
               <div className="first-row">
                 <img src={item.user.image_url} />
@@ -199,8 +198,8 @@ function Articles() {
                 </span>
               </div>
             </Info>
-          </motion.li>
-        </Link>
+          </Link>
+        </motion.li>
       ))}
     </Container>
   );

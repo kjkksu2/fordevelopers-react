@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { corsUrl, IPagination, pagination } from "../../recoil/atom";
+import { IPagination, pagination } from "../../recoil/atom";
 
 const Nav = styled.nav`
   margin-bottom: 50px;

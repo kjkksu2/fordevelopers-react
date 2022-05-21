@@ -130,7 +130,7 @@ const Options = styled.div`
   }
 `;
 
-function Write() {
+function Update() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [post, setPost] = useRecoilState<IArticle>(article);
   const [title, setTitle] = useState<string>("");
@@ -142,6 +142,7 @@ function Write() {
   const liRef = useRef<HTMLLIElement>(null);
   const [imageExist, setImageExist] = useState<boolean>(false);
   let imageFileList: File[] = [];
+  const [erasedImage, setErasedImage] = useState<string[]>([]);
 
   const categoryRegex = /category=[a-z]+/g;
   const category = queryString.match(categoryRegex)?.join("").split("=")[1];
@@ -234,7 +235,61 @@ function Write() {
 
     if (content === "") return alert("내용을 적어주세요.");
 
+    if (pathname.includes("update")) {
+      await fetch(
+        `${backendUrl}/api/board/image/delete?category=${category}&id=${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ erasedImage }),
+        }
+      );
+    }
+
     formRef.current?.submit();
+  }
+
+  useEffect(() => {
+    if (pathname.includes("update")) {
+      (async function () {
+        const { article, category: resCategory } = await (
+          await fetch(
+            `${backendUrl}/play/board/article?category=${category}&id=${id}`
+          )
+        ).json();
+        setPost(() => ({ ...article, category: resCategory }));
+      })();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pathname.includes("update")) {
+      setTitle(post.title ?? "");
+      setContent(post.content ?? "");
+
+      post?.images.length > 0 ? setImageExist(true) : setImageExist(false);
+    } else {
+      setTitle("");
+      setContent("");
+    }
+  }, [post, pathname]);
+
+  async function clickedBackendImage(event: React.MouseEvent<HTMLLIElement>) {
+    if (window.confirm("삭제하시겠습니까?")) {
+      const clickedTarget = event.target as HTMLImageElement;
+      const clickedImage = clickedTarget.parentElement as Element;
+      const children = clickedImage.children[0] as HTMLImageElement;
+      const currentSrc = children.currentSrc;
+
+      setErasedImage((prev) => [...prev, currentSrc.split("images/")[1]]);
+
+      clickedImage.remove();
+
+      erasedImage.length === post.images?.length - 1 && setImageExist(false);
+    }
   }
 
   return (
@@ -273,13 +328,19 @@ function Write() {
             onChange={changeContent}
             value={content}
           />
-          {/* <Image ref={ulRef} imageExist={imageExist}>
-            {imageFileList.map((element, idx) => (
-              <li key={idx} ref={liRef} className={`img${idx}`}>
-                <img src={backendUrl + element} className="previewImage" />
-              </li>
-            ))}
-          </Image> */}
+          <Image ref={ulRef} imageExist={imageExist}>
+            {pathname.includes("update") &&
+              post.images?.map((element, idx) => (
+                <li
+                  key={idx}
+                  ref={liRef}
+                  onClick={clickedBackendImage}
+                  className={`img${idx}`}
+                >
+                  <img src={backendUrl + element} className="previewImage" />
+                </li>
+              ))}
+          </Image>
         </div>
       </Box>
       <Options>
@@ -292,4 +353,4 @@ function Write() {
   );
 }
 
-export default Write;
+export default Update;
