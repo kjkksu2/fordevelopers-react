@@ -17,7 +17,7 @@ const Li = styled.li`
   font-weight: 700;
 
   &:not(:first-child) {
-    margin-left: 10px;
+    margin-left: 20px;
   }
 
   a,
@@ -26,15 +26,24 @@ const Li = styled.li`
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+  }
+
+  a {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     padding: 20px;
-    cursor: pointer;
 
     &.active {
       background-color: #7f8c8d;
     }
+  }
+
+  span {
+    height: 30px;
+    border-radius: 10px;
+    padding: 20px 10px;
   }
 `;
 
