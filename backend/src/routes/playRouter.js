@@ -45,7 +45,7 @@ playRouter.get("/board/article", article);
              게시물 수정
  ************************************/
 playRouter.post(
-  "/board/update",
+  "/board/article/update",
   uploadImages.fields([{ name: "imageFile" }]),
   update
 );
@@ -53,7 +53,7 @@ playRouter.post(
 /************************************
              게시물 삭제
  ************************************/
-playRouter.get("/board/remove", remove);
+playRouter.get("/board/article/remove", remove);
 
 /************************************
             댓글 등록하기

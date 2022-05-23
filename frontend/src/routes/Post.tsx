@@ -215,12 +215,12 @@ function Post() {
   }
 
   function updateArticle() {
-    history.push(`/board/update${queryString}`);
+    history.push(`/board/article/update${queryString}`);
   }
 
   async function deleteArticle() {
     if (window.confirm("게시글을 삭제하시겠습니까?")) {
-      await fetch(`${backendUrl}/play/board/remove${queryString}`, {
+      await fetch(`${backendUrl}/play/board/article/remove${queryString}`, {
         credentials: "include",
       });
       window.location.replace(`/board?category=${category}&page=1`);

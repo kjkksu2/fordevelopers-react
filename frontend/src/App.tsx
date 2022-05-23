@@ -42,11 +42,14 @@ function App() {
           <Header />
           <Home />
         </Route>
-        <Route exact path={["/board", "/board/search", "/board/remove"]}>
+        <Route
+          exact
+          path={["/board", "/board/search", "/board/article/remove"]}
+        >
           <Header />
           <Board />
         </Route>
-        <Route exact path={["/board/write", "/board/update"]}>
+        <Route exact path={["/board/write", "/board/article/update"]}>
           <Header />
           <Write />
         </Route>

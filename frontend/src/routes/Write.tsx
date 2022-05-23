@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { article, corsUrl, IArticle } from "../recoil/atom";
 
@@ -140,8 +140,10 @@ function Write() {
   const ulRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const liRef = useRef<HTMLLIElement>(null);
+
   const [imageExist, setImageExist] = useState<boolean>(false);
-  let imageFileList: File[] = [];
+  const [imageFileList, setImageFileList] = useState<File[]>([]);
+  const [erasedImage, setErasedImage] = useState<string[]>([]);
 
   const categoryRegex = /category=[a-z]+/g;
   const category = queryString.match(categoryRegex)?.join("").split("=")[1];
@@ -159,15 +161,15 @@ function Write() {
         (element) => element === target
       );
 
-      const current = inputRef.current as HTMLInputElement;
+      const inputCurrent = inputRef.current as HTMLInputElement;
 
       for (let i = 0; i < imageFileList.length; i++) {
-        i === targetIndex && imageFileList.splice(i, 1);
+        i === targetIndex && setImageFileList((prev) => prev.splice(i, 1));
       }
 
       const dt = new DataTransfer();
       imageFileList.forEach((element) => dt.items.add(element));
-      current.files = dt.files;
+      inputCurrent.files = dt.files;
 
       clickedImage.remove(); // remove를 먼저하면 inputList가 바뀐다.
 
@@ -179,12 +181,9 @@ function Write() {
     const target = event.target as HTMLInputElement;
     const files = target.files as FileList;
 
-    const current = inputRef.current as HTMLInputElement;
-
-    const dt = new DataTransfer();
-    Array.from(files).forEach((element) => imageFileList.push(element));
-    imageFileList.forEach((element) => dt.items.add(element));
-    current.files = dt.files;
+    Array.from(files).forEach((element) =>
+      setImageFileList((prev) => [...prev, element])
+    );
 
     for (const file of Array.from(files)) {
       const reader = new FileReader();
@@ -200,13 +199,21 @@ function Write() {
         img.onclick = (event) => removeImage(event);
         li.appendChild(img);
 
-        const current = ulRef.current as HTMLUListElement;
-        current.appendChild(li);
+        const ulCurrent = ulRef.current as HTMLUListElement;
+        ulCurrent.appendChild(li);
 
         setImageExist(true);
       });
     }
   }
+
+  useEffect(() => {
+    const inputCurrent = inputRef.current as HTMLInputElement;
+
+    const dt = new DataTransfer();
+    imageFileList.forEach((element) => dt.items.add(element));
+    inputCurrent.files = dt.files;
+  }, [imageFileList]);
 
   function changeTitle(event: React.FormEvent<HTMLInputElement>) {
     const {
@@ -234,7 +241,59 @@ function Write() {
 
     if (content === "") return alert("내용을 적어주세요.");
 
+    if (pathname.includes("update")) {
+      await fetch(
+        `${backendUrl}/api/board/image/delete?category=${category}&id=${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ erasedImage }),
+        }
+      );
+    }
+
     formRef.current?.submit();
+  }
+
+  useEffect(() => {
+    if (pathname.includes("update")) {
+      (async function () {
+        const { article, category: resCategory } = await (
+          await fetch(
+            `${backendUrl}/play/board/article?category=${category}&id=${id}`
+          )
+        ).json();
+
+        setPost(() => ({ ...article, category: resCategory }));
+      })();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pathname.includes("update")) {
+      setTitle(post.title ?? "");
+      setContent(post.content ?? "");
+
+      post?.images.length > 0 ? setImageExist(true) : setImageExist(false);
+    }
+  }, [post, pathname]);
+
+  async function clickedBackendImage(event: React.MouseEvent<HTMLLIElement>) {
+    if (window.confirm("삭제하시겠습니까?")) {
+      const clickedTarget = event.target as HTMLImageElement;
+      const clickedImage = clickedTarget.parentElement as Element;
+      const children = clickedImage.children[0] as HTMLImageElement;
+      const currentSrc = children.currentSrc;
+
+      setErasedImage((prev) => [...prev, currentSrc.split("images/")[1]]);
+
+      clickedImage.remove();
+
+      erasedImage.length === post.images?.length - 1 && setImageExist(false);
+    }
   }
 
   return (
@@ -273,13 +332,14 @@ function Write() {
             onChange={changeContent}
             value={content}
           />
-          {/* <Image ref={ulRef} imageExist={imageExist}>
-            {imageFileList.map((element, idx) => (
-              <li key={idx} ref={liRef} className={`img${idx}`}>
-                <img src={backendUrl + element} className="previewImage" />
-              </li>
-            ))}
-          </Image> */}
+          <Image ref={ulRef} imageExist={imageExist}>
+            {pathname.includes("update") &&
+              post.images?.map((element, idx) => (
+                <li key={idx} ref={liRef} onClick={clickedBackendImage}>
+                  <img src={backendUrl + element} className="previewImage" />
+                </li>
+              ))}
+          </Image>
         </div>
       </Box>
       <Options>
