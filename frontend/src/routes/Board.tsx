@@ -103,8 +103,7 @@ function Board() {
   const history = useHistory();
   const loginState = useRecoilValue<boolean>(isLoggedIn);
 
-  const keywordRegex = /keyword=[\w|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+/g;
-  const keyword = queryString.match(keywordRegex)?.join("").split("=")[1];
+  const keyword = queryString?.split("keyword=")[1]?.split("&category")[0];
   const categoryRegex = /category=[a-z]+/g;
   const category = queryString.match(categoryRegex)?.join("").split("=")[1];
 
