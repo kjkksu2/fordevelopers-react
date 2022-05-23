@@ -83,13 +83,18 @@ export interface IArticle {
   _id: string;
 }
 
+export const loading = atom<boolean>({
+  key: "loading",
+  default: true,
+});
+
 export const articleLists = atom<IArticle[]>({
   key: "articleLists",
   default: [],
 });
 
 export const article = atom<IArticle>({
-  key: "post",
+  key: "article",
   default: <IArticle>{},
 });
 

@@ -8,6 +8,7 @@ import {
   IArticle,
   IPagination,
   isLoggedIn,
+  loading,
   pagination,
 } from "../recoil/atom";
 import Articles from "./Articles";
@@ -97,7 +98,7 @@ function Board() {
     useRecoilState<IPagination>(pagination);
   const [lists, setLists] = useRecoilState<IArticle[]>(articleLists);
   const [inputValue, setInputValue] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useRecoilState<boolean>(loading);
   const { search: queryString } = useLocation<string>();
   const history = useHistory();
   const loginState = useRecoilValue<boolean>(isLoggedIn);
@@ -117,6 +118,8 @@ function Board() {
     }
 
     (async function () {
+      setIsLoading(true);
+
       const { articleLists, numberOfArticles } = await (
         await fetch(fetchUrl, {
           method: "POST",

@@ -4,9 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import LoginBox from "../auth/LoginBox";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  articleLists,
   corsUrl,
+  IArticle,
   isLoggedIn,
   IUser,
+  loading,
   loggedInUser,
   loginBtn,
 } from "../../recoil/atom";
@@ -15,13 +18,13 @@ import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
 import React, { useEffect } from "react";
 
-const Container = styled.header<{ isHome?: boolean }>`
+const Container = styled.header<{ isHome?: boolean; isLoading: boolean }>`
   position: fixed;
   z-index: 99;
-  top: ${(props) => (props.isHome ? "3%" : "0")};
+  top: ${({ isHome, isLoading }) => (isHome || isLoading ? "3%" : "0")};
   left: 50%;
   transform: translateX(-50%);
-  width: ${(props) => (props.isHome ? "95%" : "100%")};
+  width: ${({ isHome, isLoading }) => (isHome || isLoading ? "95%" : "100%")};
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
@@ -29,8 +32,9 @@ const Container = styled.header<{ isHome?: boolean }>`
   white-space: nowrap;
   background-color: ${(props) => props.theme.bgColors.darker};
   color: white;
-  transition-property: top, width;
-  transition: 0.3s ease;
+  transition-property: width, top;
+  transition: 0.5s ease;
+  transition-delay: 0.1s;
 `;
 
 const Logo = styled.ul`
@@ -79,7 +83,8 @@ function Header() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [clickLoginBtn, setLoginBtn] = useRecoilState<boolean>(loginBtn);
   const [loginState, setLoginState] = useRecoilState<boolean>(isLoggedIn);
-  const [userData, setUserData] = useRecoilState<IUser>(loggedInUser);
+  const setUserData = useSetRecoilState<IUser>(loggedInUser);
+  const isLoading = useRecoilValue<boolean>(loading);
   const isHome = useRouteMatch<string>("/");
 
   useEffect(() => {
@@ -140,7 +145,7 @@ function Header() {
   }, []);
 
   return (
-    <Container isHome={isHome?.isExact}>
+    <Container isHome={isHome?.isExact} isLoading={isLoading}>
       <Logo>
         <Link to="/">
           <span>For</span>

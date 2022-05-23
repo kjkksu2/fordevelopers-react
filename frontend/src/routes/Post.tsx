@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { article, corsUrl, IArticle } from "../recoil/atom";
+import { article, corsUrl, IArticle, loading } from "../recoil/atom";
 import Comment from "./Comment";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -182,7 +182,7 @@ function Post() {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [post, setPost] = useRecoilState<IArticle>(article);
   const { search: queryString } = useLocation<string>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useRecoilState<boolean>(loading);
   const history = useHistory();
 
   const categoryRegex = /category=[a-z]+/g;
@@ -263,6 +263,8 @@ function Post() {
   }
 
   useEffect(() => {
+    setIsLoading(true);
+
     (async function () {
       const { article, category: resCategory } = await (
         await fetch(
