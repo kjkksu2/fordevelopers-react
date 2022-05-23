@@ -223,6 +223,7 @@ function Post() {
       await fetch(`${backendUrl}/play/board/article/remove${queryString}`, {
         credentials: "include",
       });
+
       window.location.replace(`/board?category=${category}&page=1`);
     }
   }
