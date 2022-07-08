@@ -27,21 +27,21 @@ const Text = styled.section`
   left: 200px;
   top: 150px;
   white-space: nowrap;
+
+  article:first-child {
+    font-size: 50px;
+    margin-bottom: 30px;
+    transform: translateX(-10px);
+  }
+
+  article:nth-child(2) {
+    font-size: 20px;
+    margin-bottom: 30px;
+    display: flex;
+  }
 `;
 
-const Title = styled.article`
-  font-size: 50px;
-  margin-bottom: 30px;
-  transform: translateX(-10px);
-`;
-
-const SubTitle = styled.article`
-  font-size: 20px;
-  margin-bottom: 30px;
-  display: flex;
-`;
-
-const FirstLetter = styled(motion.div)`
+const HeadWord = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,7 +53,7 @@ const FirstLetter = styled(motion.div)`
   }
 `;
 
-const RestLetters = styled(motion.div)`
+const RestWords = styled(motion.div)`
   display: grid;
   grid-template-rows: repeat(4, 1fr);
 
@@ -63,7 +63,7 @@ const RestLetters = styled(motion.div)`
   }
 `;
 
-const firstLetterVariants = {
+const HeadWordVar = {
   start: {
     opacity: 0,
     y: 10,
@@ -77,7 +77,7 @@ const firstLetterVariants = {
   },
 };
 
-const restLettersVariants = {
+const restWordVar = {
   start: {
     opacity: 0,
     x: 10,
@@ -93,42 +93,40 @@ const restLettersVariants = {
   },
 };
 
-const LeadParagraph = styled.article``;
-
-function Slogan() {
+const Slogan = () => {
   return (
     <Container>
       <Number>01</Number>
       <Text>
-        <Title>한국외국어대학교</Title>
-        <SubTitle>
-          <FirstLetter
+        <article>한국외국어대학교</article>
+        <article>
+          <HeadWord
             transition={{ staggerChildren: 0.3 }}
             initial="start"
             animate="end"
           >
-            <motion.span variants={firstLetterVariants}>H</motion.span>
-            <motion.span variants={firstLetterVariants}>U</motion.span>
-            <motion.span variants={firstLetterVariants}>F</motion.span>
-            <motion.span variants={firstLetterVariants}>S</motion.span>
-          </FirstLetter>
-          <RestLetters
+            {["H", "U", "F", "S"].map((el, idx) => (
+              <motion.span key={idx} variants={HeadWordVar}>
+                {el}
+              </motion.span>
+            ))}
+          </HeadWord>
+          <RestWords
             transition={{ staggerChildren: 0.3 }}
             initial="start"
             animate="end"
           >
-            <motion.span variants={restLettersVariants}>ankuk</motion.span>
-            <motion.span variants={restLettersVariants}>
-              niversity of
-            </motion.span>
-            <motion.span variants={restLettersVariants}>oreign</motion.span>
-            <motion.span variants={restLettersVariants}>tudies</motion.span>
-          </RestLetters>
-        </SubTitle>
-        <LeadParagraph>서울캠퍼스 & 글로벌캠퍼스</LeadParagraph>
+            {["ankuk", "niversity of", "oreign", "tudies"].map((el, idx) => (
+              <motion.span key={idx} variants={restWordVar}>
+                {el}
+              </motion.span>
+            ))}
+          </RestWords>
+        </article>
+        <article>서울캠퍼스 & 글로벌캠퍼스</article>
       </Text>
     </Container>
   );
-}
+};
 
 export default Slogan;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { isLoggedIn } from "../../recoil/atom";
+import { isLoggedIn } from "../../recoil/auth";
 
 function LoginSuccess() {
   const setLoginState = useSetRecoilState(isLoggedIn);

@@ -1,7 +1,7 @@
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { IPagination, pagination } from "../../recoil/atom";
+import { IPagination, pagination } from "../../recoil/common";
 
 const Nav = styled.nav`
   margin-bottom: 50px;

@@ -6,7 +6,7 @@ const Container = styled.main`
   display: flex;
 `;
 
-const Section = styled.section`
+const Background = styled.section`
   position: relative;
   width: 70%;
   height: 100%;
@@ -25,21 +25,21 @@ const Section = styled.section`
     );
   }
 
-  .bgImage {
+  img {
     width: 100%;
     height: 100%;
   }
 `;
 
-function Home() {
+const Home = () => {
   return (
     <Container>
       <Slogan />
-      <Section>
-        <img className="bgImage" src="/images/hufs1.jpg" />
-      </Section>
+      <Background>
+        <img src="/images/hufs1.jpg" alt="bgImage" />
+      </Background>
     </Container>
   );
-}
+};
 
 export default Home;

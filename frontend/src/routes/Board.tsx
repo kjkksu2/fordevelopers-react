@@ -2,17 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import {
-  articleLists,
-  corsUrl,
-  IArticle,
-  IPagination,
-  isLoggedIn,
-  loading,
-  pagination,
-} from "../recoil/atom";
+import { articleLists, IArticle } from "../recoil/article";
 import Articles from "./Articles";
 import Pagination from "../components/common/Pagination";
+import { corsUrl, IPagination, loading, pagination } from "../recoil/common";
+import { isLoggedIn } from "../recoil/auth";
 
 const Container = styled.main`
   padding-top: 150px;

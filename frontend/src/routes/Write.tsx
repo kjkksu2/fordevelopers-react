@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { article, corsUrl, IArticle } from "../recoil/atom";
+import { article, IArticle } from "../recoil/article";
+import { corsUrl } from "../recoil/common";
 
 const Form = styled.form`
   width: 700px;

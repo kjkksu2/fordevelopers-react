@@ -8,8 +8,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { article, corsUrl, IArticle } from "../recoil/atom";
+import { article, IArticle } from "../recoil/article";
 import WrittenTime from "../components/common/WrittenTime";
+import { corsUrl } from "../recoil/common";
 
 const Container = styled.section`
   width: 700px;

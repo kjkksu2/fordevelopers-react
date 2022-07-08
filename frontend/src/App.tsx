@@ -5,8 +5,9 @@ import Home from "./routes/Home";
 import Write from "./routes/Write";
 import Board from "./routes/Board";
 import Post from "./routes/Post";
+import { memo } from "react";
 
-function App() {
+const App = memo(() => {
   // useEffect(() => {
   //   // 유저가 로그인한 상태일 때
   //   if (user) {
@@ -58,6 +59,6 @@ function App() {
       </Switch>
     </Router>
   );
-}
+});
 
 export default App;

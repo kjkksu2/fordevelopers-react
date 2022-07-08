@@ -4,8 +4,9 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
-import { articleLists, IArticle, isLoggedIn } from "../recoil/atom";
+import { articleLists, IArticle } from "../recoil/article";
 import WrittenTime from "../components/common/WrittenTime";
+import { isLoggedIn } from "../recoil/auth";
 
 const Container = styled.ul`
   width: 100%;

@@ -1,5 +1,6 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { corsUrl, isLoggedIn, loggedInUser } from "../../recoil/atom";
+import { isLoggedIn, loggedInUser } from "../../recoil/auth";
+import { corsUrl } from "../../recoil/common";
 
 function Logout() {
   const backendUrl = useRecoilValue(corsUrl);

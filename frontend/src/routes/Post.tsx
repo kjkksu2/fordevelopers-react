@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { article, corsUrl, IArticle, loading } from "../recoil/atom";
+import { article, IArticle } from "../recoil/article";
 import Comment from "./Comment";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,6 +15,7 @@ import {
   faThumbsUp,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
+import { corsUrl, loading } from "../recoil/common";
 
 const Container = styled.main`
   padding: 150px 0;
