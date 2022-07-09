@@ -10,8 +10,9 @@ import { loading } from "../../recoil/common";
 import { isLoggedIn, loginBtn } from "../../recoil/auth";
 import useCheck from "../../hooks/useCheck";
 import useLogin from "../../hooks/useLogin";
+import { memo } from "react";
 
-const Container = styled.header<{ isHome?: boolean; isLoading: boolean }>`
+const Container = styled.nav<{ isHome?: boolean; isLoading: boolean }>`
   position: fixed;
   z-index: 99;
   top: ${({ isHome, isLoading }) => (isHome || isLoading ? "3%" : "0")};
@@ -73,7 +74,7 @@ const Header = () => {
   const [loginState, _] = useRecoilState<boolean>(isLoggedIn);
   const [isLoading, __] = useRecoilState<boolean>(loading);
 
-  const isHome = useRouteMatch<string>("/");
+  const isHome = useRouteMatch("/");
 
   useLogin();
   useCheck("loginBox", setLoginBtn);

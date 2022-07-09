@@ -9,7 +9,7 @@ const useLogin = () => {
   const [_, setUserData] = useRecoilState<IUser>(loggedInUser);
 
   useEffect(() => {
-    (async function () {
+    (async () => {
       const { status, user } = await (
         await fetch(`${backendUrl}/users/auth`, {
           credentials: "include",

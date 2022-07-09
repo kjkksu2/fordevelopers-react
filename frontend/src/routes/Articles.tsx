@@ -148,7 +148,7 @@ const Info = styled.div`
   }
 `;
 
-function Articles() {
+const Articles = () => {
   const loginState = useRecoilValue(isLoggedIn);
   const lists = useRecoilValue<IArticle[]>(articleLists);
   const { search: queryString } = useLocation<string>();
@@ -163,7 +163,7 @@ function Articles() {
           <Link to={`/board/article?category=${category}&id=${item._id}`}>
             <Writer isHere={loginState}>
               <div className="first-row">
-                <img src={item.user.image_url} />
+                <img src={item.user.image_url} alt="image" />
                 <div className="online-bg">
                   <div className="online"></div>
                 </div>
@@ -204,6 +204,6 @@ function Articles() {
       ))}
     </Container>
   );
-}
+};
 
 export default Articles;

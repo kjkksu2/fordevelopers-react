@@ -18,18 +18,16 @@ const Container = styled(motion.div)`
   }
 `;
 
-const Image = styled.img``;
-
 const Text = styled.section`
   background-color: white;
   padding: 20px;
   white-space: nowrap;
-`;
 
-const Title = styled.h1`
-  text-align: center;
-  font-size: 30px;
-  margin-bottom: 20px;
+  h1 {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 20px;
+  }
 `;
 
 const Alert = styled.article`
@@ -57,20 +55,20 @@ interface ILoginBox {
   layoutId: string;
 }
 
-function LoginBox({ layoutId }: ILoginBox) {
+const LoginBox = ({ layoutId }: ILoginBox) => {
   const { pathname, search } = useLocation<string>();
   const backendUrl = useRecoilValue(corsUrl);
 
-  async function googleClicked() {
+  const googleClicked = () => {
     localStorage.setItem("returningUrl", pathname + search);
     window.location.href = `${backendUrl}/users/google/login`;
-  }
+  };
 
   return (
     <Container className="loginBox" layoutId={layoutId}>
-      <Image src="/images/login.jpg" />
+      <img src="/images/login.jpg" alt="login" />
       <Text>
-        <Title>Welcome</Title>
+        <h1>Welcome</h1>
         <Alert>
           <span>유의사항</span>
           <ul>
@@ -79,11 +77,11 @@ function LoginBox({ layoutId }: ILoginBox) {
           </ul>
         </Alert>
         <Login className="loginBox" onClick={googleClicked}>
-          <img src="/images/googleLogin.png" />
+          <img src="/images/googleLogin.png" alt="googleLogin" />
         </Login>
       </Text>
     </Container>
   );
-}
+};
 
 export default LoginBox;

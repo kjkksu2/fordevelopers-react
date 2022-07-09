@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { articleLists, IArticle } from "../recoil/article";
 import Articles from "./Articles";
 import Pagination from "../components/common/Pagination";
-import { corsUrl, IPagination, loading, pagination } from "../recoil/common";
+import { loading } from "../recoil/common";
 import { isLoggedIn } from "../recoil/auth";
+import useFetch from "../hooks/useFetch";
+import useCurrentPage from "../hooks/useCurrentPage";
 
 const Container = styled.main`
   padding-top: 150px;
@@ -86,62 +88,26 @@ const Header = styled.section`
   }
 `;
 
-function Board() {
-  const backendUrl = useRecoilValue<string>(corsUrl);
-  const [{ articlesPerPage, currentPage }, setPaginate] =
-    useRecoilState<IPagination>(pagination);
-  const [lists, setLists] = useRecoilState<IArticle[]>(articleLists);
+const Board = () => {
+  const [lists, _] = useRecoilState<IArticle[]>(articleLists);
+  const [isLoading, __] = useRecoilState<boolean>(loading);
+  const [loginState, ___] = useRecoilState<boolean>(isLoggedIn);
+
   const [inputValue, setInputValue] = useState<string>("");
-  const [isLoading, setIsLoading] = useRecoilState<boolean>(loading);
   const { search: queryString } = useLocation<string>();
   const history = useHistory();
-  const loginState = useRecoilValue<boolean>(isLoggedIn);
 
   const keyword = queryString?.split("keyword=")[1]?.split("&category")[0];
-  const categoryRegex = /category=[a-z]+/g;
-  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
+  const category =
+    queryString
+      .match(/category=[a-z]+/g)
+      ?.join("")
+      .split("=")[1] ?? "";
 
-  useEffect(() => {
-    let fetchUrl = null;
+  useFetch(keyword, category);
+  useCurrentPage(queryString);
 
-    if (queryString.includes("keyword")) {
-      fetchUrl = `${backendUrl}/play/board/search?keyword=${keyword}&category=${category}&page=${currentPage}`;
-    } else {
-      fetchUrl = `${backendUrl}/play/board?category=${category}&page=${currentPage}`;
-    }
-
-    (async function () {
-      setIsLoading(true);
-
-      const { articleLists, numberOfArticles } = await (
-        await fetch(fetchUrl, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ articlesPerPage }),
-        })
-      ).json();
-
-      setIsLoading(false);
-      setLists(articleLists);
-      setPaginate((prev) => ({ ...prev, numberOfArticles }));
-    })();
-  }, [currentPage, keyword]);
-
-  useEffect(() => {
-    const regex = /page=[0-9]+/g;
-    const urlPage = Number(queryString.match(regex)?.join("").split("=")[1]);
-
-    currentPage !== urlPage &&
-      setPaginate((prev) => ({
-        ...prev,
-        currentPage: urlPage,
-      }));
-  }, [queryString]);
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     history.push(
@@ -149,15 +115,15 @@ function Board() {
     );
 
     setInputValue("");
-  }
+  };
 
-  function onInput(event: React.FormEvent<HTMLInputElement>) {
+  const onInput = (event: React.FormEvent<HTMLInputElement>) => {
     const {
       currentTarget: { value },
     } = event;
 
     setInputValue(value);
-  }
+  };
 
   return (
     <Container>
@@ -192,6 +158,6 @@ function Board() {
       )}
     </Container>
   );
-}
+};
 
 export default Board;
