@@ -163,7 +163,7 @@ const Articles = () => {
           <Link to={`/board/article?category=${category}&id=${item._id}`}>
             <Writer isHere={loginState}>
               <div className="first-row">
-                <img src={item.user.image_url} alt="image" />
+                <img src={item.user.image_url} alt="user" />
                 <div className="online-bg">
                   <div className="online"></div>
                 </div>

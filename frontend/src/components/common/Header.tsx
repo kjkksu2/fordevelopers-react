@@ -1,16 +1,13 @@
-import styled from "styled-components";
 import { Link, useRouteMatch } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import LoginBox from "../auth/LoginBox";
 import { useRecoilState } from "recoil";
+import styled from "styled-components";
+
+import Login from "../auth/Login";
 import Logout from "../auth/Logout";
-import Profile from "../user/Profile";
 import UserDelete from "../auth/UserDelete";
+import Profile from "../user/Profile";
 import { loading } from "../../recoil/common";
-import { isLoggedIn, loginBtn } from "../../recoil/auth";
-import useCheck from "../../hooks/useCheck";
-import useLogin from "../../hooks/useLogin";
-import { memo } from "react";
+import { isLoggedIn } from "../../recoil/auth";
 
 const Container = styled.nav<{ isHome?: boolean; isLoading: boolean }>`
   position: fixed;
@@ -60,7 +57,7 @@ const User = styled.ul`
   justify-self: end;
   display: flex;
 
-  li {
+  & > li {
     cursor: pointer;
 
     &:not(:first-child) {
@@ -70,14 +67,10 @@ const User = styled.ul`
 `;
 
 const Header = () => {
-  const [clickLoginBtn, setLoginBtn] = useRecoilState<boolean>(loginBtn);
   const [loginState, _] = useRecoilState<boolean>(isLoggedIn);
   const [isLoading, __] = useRecoilState<boolean>(loading);
 
   const isHome = useRouteMatch("/");
-
-  useLogin();
-  useCheck("loginBox", setLoginBtn);
 
   return (
     <Container isHome={isHome?.isExact} isLoading={isLoading}>
@@ -98,14 +91,9 @@ const Header = () => {
             <UserDelete />
           </>
         ) : (
-          <motion.li style={{ cursor: "pointer" }} layoutId="login">
-            로그인
-          </motion.li>
+          <Login />
         )}
       </User>
-      <AnimatePresence>
-        {clickLoginBtn ? <LoginBox layoutId="login" /> : null}
-      </AnimatePresence>
     </Container>
   );
 };

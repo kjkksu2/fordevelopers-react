@@ -67,8 +67,9 @@ export const logout = async (req, res) => {
 
   // 개인
   req.session.destroy();
+  console.log("hi");
 
-  return res.sendStatus(200);
+  return res.json({ status: 200 });
 };
 
 /********************************
