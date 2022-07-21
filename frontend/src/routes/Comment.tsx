@@ -9,7 +9,7 @@ import styled from "styled-components";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { article, IArticle } from "../recoil/article";
-import WrittenTime from "../components/common/WrittenTime";
+import WrittenTime from "../components/WrittenTime";
 import { corsUrl } from "../recoil/common";
 
 const Container = styled.section`

@@ -5,9 +5,9 @@ import styled from "styled-components";
 import Login from "../auth/Login";
 import Logout from "../auth/Logout";
 import UserDelete from "../auth/UserDelete";
-import Profile from "../user/Profile";
-import { loading } from "../../recoil/common";
-import { isLoggedIn } from "../../recoil/auth";
+import Profile from "./Profile";
+import { loading } from "../recoil/common";
+import { isLoggedIn } from "../recoil/auth";
 
 const Container = styled.nav<{ isHome?: boolean; isLoading: boolean }>`
   position: fixed;

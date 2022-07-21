@@ -1,7 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { putImages, regexUrl } from "../helpers/functions";
+import usePost from "../hooks/usePost";
+import useWrite from "../hooks/useWrite";
 import { article, IArticle } from "../recoil/article";
 import { corsUrl } from "../recoil/common";
 
@@ -86,9 +89,9 @@ const Content = styled.textarea`
   }
 `;
 
-const Image = styled.ul<{ imageExist: boolean }>`
+const Image = styled.ul`
   background-color: white;
-  display: ${(props) => (props.imageExist ? "flex" : "none")};
+  display: flex;
   border-top: 2px solid #e3e3e3;
   padding-top: 15px;
   flex-wrap: wrap;
@@ -131,158 +134,46 @@ const Options = styled.div`
   }
 `;
 
-function Write() {
+const Write = () => {
   const backendUrl = useRecoilValue<string>(corsUrl);
-  const [post, setPost] = useRecoilState<IArticle>(article);
+  const [post, _] = useRecoilState<IArticle>(article);
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const { pathname, search: queryString } = useLocation<string>();
+
   const formRef = useRef<HTMLFormElement>(null);
   const ulRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const liRef = useRef<HTMLLIElement>(null);
 
-  const [imageExist, setImageExist] = useState<boolean>(false);
-  const [imageFileList, setImageFileList] = useState<File[]>([]);
   const [erasedImage, setErasedImage] = useState<string[]>([]);
 
-  const categoryRegex = /category=[a-z]+/g;
-  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
-  const idRegex = /id=[0-9a-f]{24}/g;
-  const id = queryString.match(idRegex)?.join("").split("=")[1];
+  const category = String(regexUrl(queryString, "category"));
+  const id = String(regexUrl(queryString, "id"));
 
-  function removeImage(event: MouseEvent) {
-    if (window.confirm("삭제하시겠습니까?")) {
-      const clickedTarget = event.target as HTMLImageElement;
-      const clickedImage = clickedTarget.parentElement as Element;
+  usePost({ category, id, setTitle, setContent });
 
-      const inputList = (event.composedPath()[2] as Element).children;
-      const target = event.composedPath()[1];
-      const targetIndex = Array.from(inputList).findIndex(
-        (element) => element === target
-      );
-
-      const inputCurrent = inputRef.current as HTMLInputElement;
-
-      for (let i = 0; i < imageFileList.length; i++) {
-        i === targetIndex && setImageFileList((prev) => prev.splice(i, 1));
-      }
-
-      const dt = new DataTransfer();
-      imageFileList.forEach((element) => dt.items.add(element));
-      inputCurrent.files = dt.files;
-
-      clickedImage.remove(); // remove를 먼저하면 inputList가 바뀐다.
-
-      imageFileList.length === 0 && setImageExist(false);
-    }
-  }
-
-  function onInput(event: React.FormEvent<HTMLInputElement>) {
-    const target = event.target as HTMLInputElement;
-    const files = target.files as FileList;
-
-    Array.from(files).forEach((element) =>
-      setImageFileList((prev) => [...prev, element])
-    );
-
-    for (const file of Array.from(files)) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.addEventListener("loadend", (event) => {
-        const target = event.target as FileReader;
-        const result = target.result as string;
-
-        const li = document.createElement("li");
-        const img = document.createElement("img");
-        img.setAttribute("src", result);
-        img.setAttribute("class", "previewImage");
-        img.onclick = (event) => removeImage(event);
-        li.appendChild(img);
-
-        const ulCurrent = ulRef.current as HTMLUListElement;
-        ulCurrent.appendChild(li);
-
-        setImageExist(true);
-      });
-    }
-  }
-
-  useEffect(() => {
-    const inputCurrent = inputRef.current as HTMLInputElement;
-
-    const dt = new DataTransfer();
-    imageFileList.forEach((element) => dt.items.add(element));
-    inputCurrent.files = dt.files;
-  }, [imageFileList]);
-
-  function changeTitle(event: React.FormEvent<HTMLInputElement>) {
+  const changeTitle = (event: React.FormEvent<HTMLInputElement>) => {
     const {
       currentTarget: { value },
     } = event;
 
     setTitle(value);
-  }
-  function changeContent(event: React.FormEvent<HTMLTextAreaElement>) {
+  };
+  const changeContent = (event: React.FormEvent<HTMLTextAreaElement>) => {
     const {
       currentTarget: { value },
     } = event;
 
     setContent(value);
-  }
-
-  function cancelButton() {
+  };
+  const cancelButton = () => {
     window.location.href = `/board${queryString}&page=1`;
-  }
+  };
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const onWriteSubmit = useWrite({ title, content, erasedImage, formRef }); // 일반 함수로 바꾸기
 
-    if (title === "") return alert("제목을 적어주세요.");
-
-    if (content === "") return alert("내용을 적어주세요.");
-
-    if (pathname.includes("update")) {
-      await fetch(
-        `${backendUrl}/api/board/image/delete?category=${category}&id=${id}`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ erasedImage }),
-        }
-      );
-    }
-
-    formRef.current?.submit();
-  }
-
-  useEffect(() => {
-    if (pathname.includes("update")) {
-      (async function () {
-        const { article, category: resCategory } = await (
-          await fetch(
-            `${backendUrl}/play/board/article?category=${category}&id=${id}`
-          )
-        ).json();
-
-        setPost(() => ({ ...article, category: resCategory }));
-      })();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (pathname.includes("update")) {
-      setTitle(post.title ?? "");
-      setContent(post.content ?? "");
-
-      post?.images.length > 0 ? setImageExist(true) : setImageExist(false);
-    }
-  }, [post, pathname]);
-
-  async function clickedBackendImage(event: React.MouseEvent<HTMLLIElement>) {
+  const clickedBackendImage = (event: React.MouseEvent<HTMLLIElement>) => {
     if (window.confirm("삭제하시겠습니까?")) {
       const clickedTarget = event.target as HTMLImageElement;
       const clickedImage = clickedTarget.parentElement as Element;
@@ -292,14 +183,12 @@ function Write() {
       setErasedImage((prev) => [...prev, currentSrc.split("images/")[1]]);
 
       clickedImage.remove();
-
-      erasedImage.length === post.images?.length - 1 && setImageExist(false);
     }
-  }
+  };
 
   return (
     <Form
-      onSubmit={onSubmit}
+      onSubmit={onWriteSubmit} // 여기서 write, update에 따라 불러오는 함수가 달라지도록
       action={`${backendUrl}/play${pathname + queryString}`}
       method="POST"
       encType="multipart/form-data"
@@ -313,7 +202,7 @@ function Write() {
             id="photo"
             type="file"
             accept="image/*"
-            onInput={onInput}
+            onInput={(event) => putImages({ event, ulRef, inputRef })}
             multiple
             ref={inputRef}
           />
@@ -333,13 +222,16 @@ function Write() {
             onChange={changeContent}
             value={content}
           />
-          <Image ref={ulRef} imageExist={imageExist}>
-            {pathname.includes("update") &&
-              post.images?.map((element, idx) => (
-                <li key={idx} ref={liRef} onClick={clickedBackendImage}>
-                  <img src={backendUrl + element} className="previewImage" />
-                </li>
-              ))}
+          <Image ref={ulRef}>
+            {post.images?.map((element, idx) => (
+              <li key={idx} ref={liRef} onClick={clickedBackendImage}>
+                <img
+                  src={backendUrl + element}
+                  className="previewImage"
+                  alt="previewImage"
+                />
+              </li>
+            ))}
           </Image>
         </div>
       </Box>
@@ -351,6 +243,6 @@ function Write() {
       </Options>
     </Form>
   );
-}
+};
 
 export default Write;

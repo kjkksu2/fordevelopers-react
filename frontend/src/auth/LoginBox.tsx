@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { corsUrl } from "../../recoil/common";
+import { corsUrl } from "../recoil/common";
 
 const Container = styled(motion.div)`
   position: absolute;

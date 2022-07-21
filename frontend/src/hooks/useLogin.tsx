@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { userData } from "../functions/ftns";
+import { userData } from "../helpers/functions";
 import { isLoggedIn, IUser, loggedInUser } from "../recoil/auth";
 import { corsUrl } from "../recoil/common";
 

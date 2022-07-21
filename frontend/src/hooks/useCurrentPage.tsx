@@ -1,21 +1,23 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { regexUrl } from "../helpers/functions";
 import { IPagination, pagination } from "../recoil/common";
 
-const useCurrentPage = (queryString: string) => {
+const useCurrentPage = () => {
+  const { search: url } = useLocation<string>();
   const [{ currentPage }, setPaginate] =
     useRecoilState<IPagination>(pagination);
 
   useEffect(() => {
-    const regex = /page=[0-9]+/g;
-    const urlPage = Number(queryString.match(regex)?.join("").split("=")[1]);
+    const page = Number(regexUrl(url, "page"));
 
-    currentPage !== urlPage &&
+    currentPage !== page &&
       setPaginate((prev) => ({
         ...prev,
-        currentPage: urlPage,
+        currentPage: page ?? -1,
       }));
-  }, [queryString]);
+  }, [url]);
 };
 
 export default useCurrentPage;

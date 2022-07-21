@@ -1,7 +1,9 @@
+import { memo } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { IPagination, pagination } from "../../recoil/common";
+import { initializedButtons } from "../helpers/functions";
+import { IPagination, pagination } from "../recoil/common";
 
 const Nav = styled.nav`
   margin-bottom: 50px;
@@ -47,42 +49,30 @@ const Li = styled.li`
   }
 `;
 
-function Pagination() {
+const Pagination = () => {
   const history = useHistory();
   const { articlesPerPage, maxShownButtons, numberOfArticles, currentPage } =
     useRecoilValue<IPagination>(pagination);
-  const paginatedButtons: number[] = [];
-  const { search: queryString } = useLocation<string>();
+  const { search: url } = useLocation<string>();
+  const paginateUrl = url.split("&page")[0];
 
-  const paginateUrl = queryString.split("&page")[0];
+  const { totalBtn, paginatedButtons } = initializedButtons({
+    articlesPerPage,
+    maxShownButtons,
+    numberOfArticles,
+    currentPage,
+  });
 
-  let multiple = 0;
-  while (maxShownButtons * multiple < currentPage) {
-    multiple++;
-  }
-
-  const totalBtn = Math.ceil(numberOfArticles / articlesPerPage);
-  const startBtn = 1 + maxShownButtons * (multiple - 1);
-  const endBtn =
-    totalBtn < startBtn + maxShownButtons - 1
-      ? totalBtn
-      : startBtn + maxShownButtons - 1;
-
-  for (let i = startBtn; i <= endBtn; i++) {
-    paginatedButtons.push(i);
-  }
-
-  function prevClick() {
+  const prevClick = () => {
     currentPage === 1
       ? alert("첫 페이지입니다.")
       : history.push(`/board${paginateUrl}&page=${currentPage - 1}`);
-  }
-  function nextClick() {
-    console.log(totalBtn);
+  };
+  const nextClick = () => {
     currentPage === totalBtn
       ? alert("마지막 페이지입니다.")
       : history.push(`/board${paginateUrl}&page=${currentPage + 1}`);
-  }
+  };
 
   return (
     <Nav>
@@ -106,6 +96,6 @@ function Pagination() {
       </Ul>
     </Nav>
   );
-}
+};
 
-export default Pagination;
+export default memo(Pagination);

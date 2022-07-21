@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { getUrl } from "../helpers/functions";
 import { articleLists, IArticle } from "../recoil/article";
 import { corsUrl, IPagination, loading, pagination } from "../recoil/common";
 
@@ -12,19 +13,13 @@ const useFetch = (keyword: string, category: string) => {
     useRecoilState<IPagination>(pagination);
 
   useEffect(() => {
-    let fetchUrl = null;
+    const url = getUrl({ backendUrl, keyword, category, currentPage });
 
-    if (keyword) {
-      fetchUrl = `${backendUrl}/play/board/search?keyword=${keyword}&category=${category}&page=${currentPage}`;
-    } else {
-      fetchUrl = `${backendUrl}/play/board?category=${category}&page=${currentPage}`;
-    }
-
-    (async function () {
+    (async () => {
       setIsLoading(true);
 
       const { articleLists, numberOfArticles } = await (
-        await fetch(fetchUrl, {
+        await fetch(url, {
           method: "POST",
           credentials: "include",
           headers: {

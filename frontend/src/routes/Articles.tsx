@@ -1,17 +1,18 @@
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
 import { articleLists, IArticle } from "../recoil/article";
-import WrittenTime from "../components/common/WrittenTime";
-import { isLoggedIn } from "../recoil/auth";
+import WrittenTime from "../components/WrittenTime";
+import { memo } from "react";
+import { regexUrl } from "../helpers/functions";
 
 const Container = styled.ul`
   width: 100%;
 
-  .list {
+  & > li {
     margin: 0 300px;
     margin-bottom: 10px;
     border-radius: 10px;
@@ -23,46 +24,22 @@ const Container = styled.ul`
   }
 `;
 
-const Writer = styled.div<{ isHere: boolean }>`
+const Writer = styled.div`
   flex: 1;
   background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 15px 0;
 
   .first-row {
     position: relative;
 
     img {
-      width: 35px;
-      height: 35px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      margin-bottom: 15px;
-    }
-
-    .online-bg {
-      position: absolute;
-      top: -7%;
-      right: -7%;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #e3e7e8;
-
-      .online {
-        width: 10px;
-        height: 10px;
-        background-color: ${(props) =>
-          props.isHere
-            ? props.theme.isHere.online
-            : props.theme.isHere.offline};
-        border-radius: 50%;
-      }
+      margin-bottom: 7px;
     }
   }
 
@@ -78,7 +55,7 @@ const Writer = styled.div<{ isHere: boolean }>`
 
       &:first-child {
         border-top: 1px solid black;
-        padding: 10px 0;
+        padding: 10px 0 0 0;
       }
     }
   }
@@ -95,7 +72,7 @@ const Content = styled.div`
   }
 
   p {
-    font-size: 15px;
+    font-size: 16px;
     line-height: 25px;
   }
 `;
@@ -117,7 +94,7 @@ const Info = styled.div`
   .comments {
     .message-icon {
       color: #b6bbbf;
-      font-size: 55px;
+      font-size: 45px;
     }
 
     span {
@@ -126,7 +103,7 @@ const Info = styled.div`
       top: 50%;
       left: 50%;
       transform: translate(-50%, -70%);
-      font-size: 25px;
+      font-size: 22px;
       font-weight: 700;
     }
   }
@@ -149,24 +126,19 @@ const Info = styled.div`
 `;
 
 const Articles = () => {
-  const loginState = useRecoilValue(isLoggedIn);
-  const lists = useRecoilValue<IArticle[]>(articleLists);
-  const { search: queryString } = useLocation<string>();
+  const [lists, __] = useRecoilState<IArticle[]>(articleLists);
+  const { search } = useLocation<string>();
 
-  const categoryRegex = /category=[a-z]+/g;
-  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
+  const category = regexUrl(search, "category");
 
   return (
     <Container>
       {lists.map((item, idx) => (
-        <motion.li key={idx} className="list" whileHover={{ x: 20 }}>
+        <motion.li key={idx} whileHover={{ x: 20 }}>
           <Link to={`/board/article?category=${category}&id=${item._id}`}>
-            <Writer isHere={loginState}>
+            <Writer>
               <div className="first-row">
                 <img src={item.user.image_url} alt="user" />
-                <div className="online-bg">
-                  <div className="online"></div>
-                </div>
               </div>
               <div className="second-row">
                 <span>
@@ -206,4 +178,4 @@ const Articles = () => {
   );
 };
 
-export default Articles;
+export default memo(Articles);

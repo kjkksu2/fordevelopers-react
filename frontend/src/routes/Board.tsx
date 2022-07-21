@@ -4,11 +4,12 @@ import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { articleLists, IArticle } from "../recoil/article";
 import Articles from "./Articles";
-import Pagination from "../components/common/Pagination";
+import Pagination from "../components/Pagination";
 import { loading } from "../recoil/common";
 import { isLoggedIn } from "../recoil/auth";
 import useFetch from "../hooks/useFetch";
 import useCurrentPage from "../hooks/useCurrentPage";
+import useUrl from "../hooks/useUrl";
 
 const Container = styled.main`
   padding-top: 150px;
@@ -94,18 +95,11 @@ const Board = () => {
   const [loginState, ___] = useRecoilState<boolean>(isLoggedIn);
 
   const [inputValue, setInputValue] = useState<string>("");
-  const { search: queryString } = useLocation<string>();
   const history = useHistory();
 
-  const keyword = queryString?.split("keyword=")[1]?.split("&category")[0];
-  const category =
-    queryString
-      .match(/category=[a-z]+/g)
-      ?.join("")
-      .split("=")[1] ?? "";
-
+  const { keyword, category } = useUrl();
   useFetch(keyword, category);
-  useCurrentPage(queryString);
+  useCurrentPage();
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

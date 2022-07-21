@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Header from "./components/common/Header";
-import LoginSuccess from "./components/auth/LoginSuccess";
+import Header from "./components/Header";
+import LoginSuccess from "./auth/LoginSuccess";
 import Home from "./routes/Home";
 import Write from "./routes/Write";
 import Board from "./routes/Board";
