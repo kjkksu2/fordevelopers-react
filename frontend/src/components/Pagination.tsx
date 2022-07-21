@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { initializedButtons } from "../helpers/functions";
+import { initializedButtons } from "../helpers/article";
 import { IPagination, pagination } from "../recoil/common";
 
 const Nav = styled.nav`

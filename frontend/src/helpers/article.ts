@@ -1,26 +1,4 @@
-import { IUser } from "../recoil/auth";
 import { IPagination } from "../recoil/common";
-
-export const userData = (user: IUser) => {
-  return {
-    choice: user?.choice ?? [],
-    comment: user?.comment ?? [],
-    dev: user?.dev ?? [],
-    created_at: user?.created_at ?? "",
-    department: user?.department ?? "",
-    email: user?.email ?? "",
-    github_url: user?.github_url ?? "",
-    goToSchool: user?.goToSchool ?? "",
-    image_url: user?.image_url ?? "",
-    introduction: user?.introduction ?? "",
-    heart: user?.heart ?? 0,
-    heart_clicked_user: user?.heart_clicked_user ?? [],
-    name: user?.name ?? "",
-    nickname: user?.nickname ?? "",
-    visit: user?.visit ?? 0,
-    _id: user?._id ?? "",
-  };
-};
 
 interface IGetUrl {
   backendUrl: string;
@@ -32,7 +10,7 @@ interface IGetUrl {
 export const getUrl = (url: IGetUrl) => {
   const { backendUrl, keyword, category, currentPage } = url;
 
-  if (keyword) {
+  if (keyword !== "undefined") {
     return `${backendUrl}/play/board/search?keyword=${keyword}&category=${category}&page=${currentPage}`;
   }
 
@@ -43,6 +21,8 @@ export const regexUrl = (search: string, type: string) => {
   let regex = null;
 
   switch (type) {
+    case "keyword":
+      return search.split("keyword=")[1]?.split("&category")[0];
     case "page":
       regex = /page=[0-9]+/g;
       return Number(search.match(regex)?.join("").split("=")[1]);
@@ -143,5 +123,25 @@ export const putImages = (data: IUseImages) => {
       const ulCurrent = ulRef.current as HTMLUListElement;
       ulCurrent.appendChild(li);
     });
+  }
+};
+
+interface IEraseImage {
+  event: React.MouseEvent<HTMLLIElement>;
+  setErasedImage: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export const eraseImage = (data: IEraseImage) => {
+  const { event, setErasedImage } = data;
+
+  if (window.confirm("삭제하시겠습니까?")) {
+    const clickedTarget = event.target as HTMLImageElement;
+    const clickedImage = clickedTarget.parentElement as Element;
+    const children = clickedImage.children[0] as HTMLImageElement;
+    const currentSrc = children.currentSrc;
+
+    setErasedImage((prev) => [...prev, currentSrc.split("images/")[1]]);
+
+    clickedImage.remove();
   }
 };

@@ -7,7 +7,7 @@ import { faMessage, faEye, faClock } from "@fortawesome/free-solid-svg-icons";
 import { articleLists, IArticle } from "../recoil/article";
 import WrittenTime from "../components/WrittenTime";
 import { memo } from "react";
-import { regexUrl } from "../helpers/functions";
+import { regexUrl } from "../helpers/article";
 
 const Container = styled.ul`
   width: 100%;

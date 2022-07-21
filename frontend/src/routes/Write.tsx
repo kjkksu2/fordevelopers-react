@@ -2,9 +2,9 @@ import React, { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { putImages, regexUrl } from "../helpers/functions";
-import usePost from "../hooks/usePost";
-import useWrite from "../hooks/useWrite";
+import { eraseImage, putImages, regexUrl } from "../helpers/article";
+import usePost from "../hooks/article/usePost";
+import useSubmit from "../hooks/article/useSubmit";
 import { article, IArticle } from "../recoil/article";
 import { corsUrl } from "../recoil/common";
 
@@ -152,6 +152,7 @@ const Write = () => {
   const id = String(regexUrl(queryString, "id"));
 
   usePost({ category, id, setTitle, setContent });
+  const onSubmit = useSubmit({ title, content, erasedImage, formRef });
 
   const changeTitle = (event: React.FormEvent<HTMLInputElement>) => {
     const {
@@ -167,28 +168,14 @@ const Write = () => {
 
     setContent(value);
   };
+
   const cancelButton = () => {
     window.location.href = `/board${queryString}&page=1`;
   };
 
-  const onWriteSubmit = useWrite({ title, content, erasedImage, formRef }); // 일반 함수로 바꾸기
-
-  const clickedBackendImage = (event: React.MouseEvent<HTMLLIElement>) => {
-    if (window.confirm("삭제하시겠습니까?")) {
-      const clickedTarget = event.target as HTMLImageElement;
-      const clickedImage = clickedTarget.parentElement as Element;
-      const children = clickedImage.children[0] as HTMLImageElement;
-      const currentSrc = children.currentSrc;
-
-      setErasedImage((prev) => [...prev, currentSrc.split("images/")[1]]);
-
-      clickedImage.remove();
-    }
-  };
-
   return (
     <Form
-      onSubmit={onWriteSubmit} // 여기서 write, update에 따라 불러오는 함수가 달라지도록
+      onSubmit={onSubmit}
       action={`${backendUrl}/play${pathname + queryString}`}
       method="POST"
       encType="multipart/form-data"
@@ -224,7 +211,11 @@ const Write = () => {
           />
           <Image ref={ulRef}>
             {post.images?.map((element, idx) => (
-              <li key={idx} ref={liRef} onClick={clickedBackendImage}>
+              <li
+                key={idx}
+                ref={liRef}
+                onClick={(event) => eraseImage({ event, setErasedImage })}
+              >
                 <img
                   src={backendUrl + element}
                   className="previewImage"

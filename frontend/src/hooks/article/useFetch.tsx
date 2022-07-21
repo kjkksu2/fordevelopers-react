@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { getUrl } from "../helpers/functions";
-import { articleLists, IArticle } from "../recoil/article";
-import { corsUrl, IPagination, loading, pagination } from "../recoil/common";
+import { getUrl } from "../../helpers/article";
+import { articleLists, IArticle } from "../../recoil/article";
+import { corsUrl, IPagination, loading, pagination } from "../../recoil/common";
 
 const useFetch = (keyword: string, category: string) => {
   const backendUrl = useRecoilValue<string>(corsUrl);

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { userData } from "../helpers/functions";
-import { isLoggedIn, IUser, loggedInUser } from "../recoil/auth";
-import { corsUrl } from "../recoil/common";
+import { userData } from "../../helpers/auth";
+import { isLoggedIn, IUser, loggedInUser } from "../../recoil/auth";
+import { corsUrl } from "../../recoil/common";
 
 const useLogin = () => {
   const backendUrl = useRecoilValue<string>(corsUrl);

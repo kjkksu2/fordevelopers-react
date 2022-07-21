@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { useRecoilState } from "recoil";
 
-import useLogin from "../hooks/useLogin";
-import useCheck from "../hooks/useCheck";
+import useLogin from "../hooks/auth/useLogin";
+import useCheck from "../hooks/common/useCheck";
 import { loginBtn } from "../recoil/auth";
 import LoginBox from "./LoginBox";
 

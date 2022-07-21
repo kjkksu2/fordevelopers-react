@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { article, IArticle } from "../recoil/article";
-import { corsUrl } from "../recoil/common";
+import { article, IArticle } from "../../recoil/article";
+import { corsUrl } from "../../recoil/common";
 
 interface IUsePost {
   category: string;

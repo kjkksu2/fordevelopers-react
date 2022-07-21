@@ -7,9 +7,9 @@ import Articles from "./Articles";
 import Pagination from "../components/Pagination";
 import { loading } from "../recoil/common";
 import { isLoggedIn } from "../recoil/auth";
-import useFetch from "../hooks/useFetch";
-import useCurrentPage from "../hooks/useCurrentPage";
-import useUrl from "../hooks/useUrl";
+import useFetch from "../hooks/article/useFetch";
+import useCurrentPage from "../hooks/article/useCurrentPage";
+import { regexUrl } from "../helpers/article";
 
 const Container = styled.main`
   padding-top: 150px;
@@ -96,8 +96,11 @@ const Board = () => {
 
   const [inputValue, setInputValue] = useState<string>("");
   const history = useHistory();
+  const { search } = useLocation<string>();
 
-  const { keyword, category } = useUrl();
+  const keyword = String(regexUrl(search, "keyword"));
+  const category = String(regexUrl(search, "category"));
+
   useFetch(keyword, category);
   useCurrentPage();
 

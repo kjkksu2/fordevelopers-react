@@ -1,5 +1,5 @@
 import { memo } from "react";
-import useLogout from "../hooks/useLogout";
+import useLogout from "../hooks/auth/useLogout";
 
 const Logout = () => {
   const onClick = useLogout();

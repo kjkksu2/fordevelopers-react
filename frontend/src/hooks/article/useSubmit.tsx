@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { regexUrl } from "../helpers/functions";
-import { corsUrl } from "../recoil/common";
+import { regexUrl } from "../../helpers/article";
+import { corsUrl } from "../../recoil/common";
 
 interface IWrite {
   title: string;
@@ -10,7 +10,7 @@ interface IWrite {
   formRef: React.RefObject<HTMLFormElement>;
 }
 
-const useWrite = (data: IWrite) => {
+const useSubmit = (data: IWrite) => {
   const { title, content, erasedImage, formRef } = data;
   const { pathname, search } = useLocation<string>();
   const backendUrl = useRecoilValue<string>(corsUrl);
@@ -43,4 +43,4 @@ const useWrite = (data: IWrite) => {
   };
 };
 
-export default useWrite;
+export default useSubmit;

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { regexUrl } from "../helpers/functions";
-import { IPagination, pagination } from "../recoil/common";
+import { regexUrl } from "../../helpers/article";
+import { IPagination, pagination } from "../../recoil/common";
 
 const useCurrentPage = () => {
   const { search: url } = useLocation<string>();
