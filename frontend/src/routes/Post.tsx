@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { article, IArticle } from "../recoil/article";
-import Comment from "./Comment";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,7 +12,13 @@ import {
   faThumbsUp,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
+import Comment from "./Comment";
+import { article, IArticle } from "../recoil/article";
 import { corsUrl, loading } from "../recoil/common";
+import { regexUrl } from "../helpers/article";
+import { getTotalTimes } from "../helpers/common";
+import useIcon from "../hooks/article/useIcon";
+import usePost from "../hooks/article/usePost";
 
 const Container = styled.main`
   padding: 150px 0;
@@ -88,6 +91,12 @@ const Writer = styled.article`
     .second-column {
       .info {
         margin-bottom: 3px;
+
+        span {
+          &:first-child {
+            font-weight: 600;
+          }
+        }
 
         .heart-icon {
           color: red;
@@ -179,47 +188,28 @@ const Status = styled(motion.div)`
   }
 `;
 
-function Post() {
+const Post = () => {
   const backendUrl = useRecoilValue<string>(corsUrl);
   const [post, setPost] = useRecoilState<IArticle>(article);
   const { search: queryString } = useLocation<string>();
   const [isLoading, setIsLoading] = useRecoilState<boolean>(loading);
   const history = useHistory();
 
-  const categoryRegex = /category=[a-z]+/g;
-  const idRegex = /id=[0-9a-f]{24}/g;
-  const category = queryString.match(categoryRegex)?.join("").split("=")[1];
-  const id = queryString.match(idRegex)?.join("").split("=")[1];
+  const category = String(regexUrl(queryString, "category"));
+  const id = String(regexUrl(queryString, "id"));
 
-  function showTime(created_at: string | undefined) {
-    const writtenTime = created_at && new Date(created_at);
-
-    const year = writtenTime?.toLocaleString("en-US", { year: "numeric" });
-    const month = writtenTime
-      ?.toLocaleString("en-US", { month: "numeric" })
-      .padStart(2, "0");
-    const day = writtenTime
-      ?.toLocaleString("en-US", { day: "numeric" })
-      .padStart(2, "0");
-
-    const hour = writtenTime
-      ?.toLocaleString("en-US", { hour: "numeric", hour12: false })
-      .padStart(2, "0");
-    const minute = writtenTime
-      ?.toLocaleString("ko-KR", { minute: "numeric" })
-      .padStart(2, "0");
-    const second = writtenTime
-      ?.toLocaleString("ko-KR", { second: "numeric" })
-      .padStart(2, "0");
+  const showTime = (created_at: string) => {
+    const writtenTime = new Date(created_at);
+    const { year, month, day, hour, minute, second } =
+      getTotalTimes(writtenTime);
 
     return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  }
+  };
 
-  function updateArticle() {
+  const updateArticle = () => {
     history.push(`/board/article/update${queryString}`);
-  }
-
-  async function deleteArticle() {
+  };
+  const deleteArticle = async () => {
     if (window.confirm("게시글을 삭제하시겠습니까?")) {
       await fetch(`${backendUrl}/play/board/article/remove${queryString}`, {
         credentials: "include",
@@ -227,69 +217,11 @@ function Post() {
 
       window.location.replace(`/board?category=${category}&page=1`);
     }
-  }
+  };
 
-  async function clickLike() {
-    const response = await fetch(`${backendUrl}/api/board/like${queryString}`, {
-      method: "POST",
-      credentials: "include",
-    });
-
-    if (response.status !== 200) {
-      alert("이미 눌렀습니다.");
-    } else {
-      setPost((prev) => ({
-        ...prev,
-        like: prev.like + 1,
-      }));
-    }
-  }
-
-  async function clickScrap() {
-    const response = await fetch(
-      `${backendUrl}/api/board/scrap${queryString}`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    if (response.status !== 200) {
-      alert("이미 눌렀습니다.");
-    } else {
-      setPost((prev) => ({
-        ...prev,
-        scrap: prev.scrap + 1,
-      }));
-    }
-  }
-
-  useEffect(() => {
-    setIsLoading(true);
-
-    (async function () {
-      const { article, category: resCategory } = await (
-        await fetch(
-          `${backendUrl}/play/board/article?category=${category}&id=${id}`
-        )
-      ).json();
-
-      setIsLoading(false);
-      setPost(() => ({ ...article, category: resCategory }));
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async function () {
-      await fetch(
-        `${backendUrl}/api/board/views?category=${category}&id=${id}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
-    })();
-  }, []);
+  const clickLike = useIcon({ type: "like", setPost });
+  const clickScrap = useIcon({ type: "scrap", setPost });
+  usePost({ category, id, setIsLoading, setPost });
 
   return (
     <Container>
@@ -311,7 +243,7 @@ function Post() {
             <Writer>
               <div className="writer-container">
                 <div className="first-column">
-                  <img src={post.user?.image_url} />
+                  <img src={post.user?.image_url} alt="userImage" />
                 </div>
                 <div className="second-column">
                   <div className="info">
@@ -319,7 +251,7 @@ function Post() {
                     <FontAwesomeIcon icon={faHeart} className="heart-icon" />
                     <span>{post.user?.heart}</span>
                   </div>
-                  <div className="time">{showTime(post?.created_at)}</div>
+                  <div className="time">{showTime(post.created_at)}</div>
                 </div>
               </div>
             </Writer>
@@ -330,7 +262,7 @@ function Post() {
             <Image>
               {post.images?.map((element, idx) => (
                 <li key={idx}>
-                  <img src={backendUrl + element} />
+                  <img src={backendUrl + element} alt="" />
                 </li>
               ))}
             </Image>
@@ -358,6 +290,6 @@ function Post() {
       )}
     </Container>
   );
-}
+};
 
 export default Post;

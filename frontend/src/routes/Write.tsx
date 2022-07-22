@@ -1,11 +1,10 @@
 import React, { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { eraseImage, putImages, regexUrl } from "../helpers/article";
-import usePost from "../hooks/article/usePost";
+import useWrite from "../hooks/article/useWrite";
 import useSubmit from "../hooks/article/useSubmit";
-import { article, IArticle } from "../recoil/article";
 import { corsUrl } from "../recoil/common";
 
 const Form = styled.form`
@@ -136,9 +135,9 @@ const Options = styled.div`
 
 const Write = () => {
   const backendUrl = useRecoilValue<string>(corsUrl);
-  const [post, _] = useRecoilState<IArticle>(article);
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
   const { pathname, search: queryString } = useLocation<string>();
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -151,7 +150,7 @@ const Write = () => {
   const category = String(regexUrl(queryString, "category"));
   const id = String(regexUrl(queryString, "id"));
 
-  usePost({ category, id, setTitle, setContent });
+  useWrite({ category, id, setTitle, setContent, setImages });
   const onSubmit = useSubmit({ title, content, erasedImage, formRef });
 
   const changeTitle = (event: React.FormEvent<HTMLInputElement>) => {
@@ -210,7 +209,7 @@ const Write = () => {
             value={content}
           />
           <Image ref={ulRef}>
-            {post.images?.map((element, idx) => (
+            {images?.map((element, idx) => (
               <li
                 key={idx}
                 ref={liRef}

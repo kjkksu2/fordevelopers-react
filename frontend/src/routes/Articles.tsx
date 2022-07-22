@@ -78,7 +78,7 @@ const Content = styled.div`
 `;
 
 const Info = styled.div`
-  flex: 1;
+  flex: 1.1;
   background-color: #f5f5f5;
   display: grid;
   grid-template-rows: 1fr 0.5fr 0.5fr;

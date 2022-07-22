@@ -15,7 +15,7 @@ const useCurrentPage = () => {
     currentPage !== page &&
       setPaginate((prev) => ({
         ...prev,
-        currentPage: page ?? -1,
+        currentPage: page,
       }));
   }, [url]);
 };

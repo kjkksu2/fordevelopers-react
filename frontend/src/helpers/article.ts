@@ -25,7 +25,7 @@ export const regexUrl = (search: string, type: string) => {
       return search.split("keyword=")[1]?.split("&category")[0];
     case "page":
       regex = /page=[0-9]+/g;
-      return Number(search.match(regex)?.join("").split("=")[1]);
+      return search.match(regex)?.join("").split("=")[1];
     case "category":
       regex = /category=[a-z]+/g;
       return search.match(regex)?.join("").split("=")[1];
